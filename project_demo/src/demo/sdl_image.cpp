@@ -14,7 +14,7 @@ int main()
     }
 
     // Khởi tạo SDL_Image
-    if (IMG_Init(IMG_INIT_PNG) == 0)
+    if (IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) == 0)
     {
         cout << "IMG_Init failed: " << IMG_GetError() << endl;
         SDL_Quit();
@@ -41,8 +41,8 @@ int main()
     }
 
     // Tải background và nhân vật
-    SDL_Texture *background = IMG_LoadTexture(render, "background.png");
-    SDL_Texture *player = IMG_LoadTexture(render, "player.png");
+    SDL_Texture *background = IMG_LoadTexture(render, "image/background.jpg");
+    SDL_Texture *player = IMG_LoadTexture(render, "image/player.png");
     if (!background || !player)
     {
         cout << "IMG_LoadTexture failed: " << IMG_GetError() << endl;
@@ -82,7 +82,7 @@ int main()
         SDL_RenderCopy(render, background, NULL, NULL);
         SDL_RenderCopy(render, player, NULL, &playerRect);
         SDL_RenderPresent(render);
-        SDL_Delay(1000);
+        SDL_Delay(10);
     }
 
     SDL_DestroyTexture(background);
