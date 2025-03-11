@@ -1,24 +1,22 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include "GameObject.h"
 
-class Player
+class Player : public Object
 {
-    int x;  int y;  int w;  int h;
-    int speed;
-    SDL_Texture *player;
+    int frames;
+    int max_frames;
+    SDL_Rect src;
 
     public:
         // Constructor
-        Player(SDL_Renderer *render, char* imagePath, int _x, int _y);
-        ~Player();
+        Player(int x, int y, int w, int h, int f);
 
         // Running
         void handle_event(const SDL_Event &event);
-        void update();
-        void render (SDL_Renderer *renderer);
+        void update() override;
+        void render(SDL_Renderer *renderer) override;
 };
 
 #endif
