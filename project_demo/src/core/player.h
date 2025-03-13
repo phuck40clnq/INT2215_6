@@ -11,7 +11,7 @@ class Player : public Object
 
     public:
         // Constructor
-        Player(int x, int y, int w, int h, int f);
+        Player(int x = 400, int y = 300, int w = 200, int h = 100, int frames = 0);
 
         // Running
         void handle_event(const SDL_Event &event);

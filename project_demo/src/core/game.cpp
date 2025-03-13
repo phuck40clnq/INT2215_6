@@ -29,6 +29,12 @@ bool Game::init(const char* title, int width, int height)
         return false;
     }
 
+    // For player
+    if (!player->LoadTexture(renderer, "../images/player.png"))
+    {
+        return false;
+    }
+
     // Success
     isRunning = true;
     SDL_Log("Game khởi động thành công!");
@@ -59,10 +65,28 @@ void Game::handle_event()
             {
                 isRunning = false;
             }
+
+            
         }
+        player->update();
+        SDL_RenderClear(renderer);
+
+        player->render(renderer);
+        SDL_Delay(1000);
     }
 }
 
+void Game::update_game()
+{
+    player->update();
+    return;
+}
+
+void Game::render()
+{
+    SDL_RenderPresent(renderer);
+    return;
+}
 
 // Clean game
 void Game::clean()
@@ -70,6 +94,7 @@ void Game::clean()
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+    delete player;
     return;
 }
 

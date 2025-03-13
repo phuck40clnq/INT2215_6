@@ -41,8 +41,8 @@ int main()
     }
 
     // Tải background và nhân vật
-    SDL_Texture *background = IMG_LoadTexture(render, "image/background.jpg");
-    SDL_Texture *player = IMG_LoadTexture(render, "image/player.png");
+    SDL_Texture *background = IMG_LoadTexture(render, "images/background.jpg");
+    SDL_Texture *player = IMG_LoadTexture(render, "images/player.png");
     if (!background || !player)
     {
         cout << "IMG_LoadTexture failed: " << IMG_GetError() << endl;

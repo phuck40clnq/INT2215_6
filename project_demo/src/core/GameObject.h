@@ -6,9 +6,12 @@
 
 class Object
 {
-    int x, y, w, h;
-    SDL_Texture *texture;
+    protected:
+        int x, y, w, h;
+        SDL_Texture *texture;
+
     public:
+        Object() : x(300), y(200), w(200), h(100) {}
         Object(int x, int y, int w, int h);
         ~Object();
 

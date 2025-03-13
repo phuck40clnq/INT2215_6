@@ -12,6 +12,11 @@ Object::~Object()
 
 bool Object::LoadTexture(SDL_Renderer *renderer, const char* imagePath)
 {
+    if (texture)
+    {
+        SDL_DestroyTexture(texture);
+    }
+
     texture = IMG_LoadTexture(renderer, imagePath);
     
     if (!texture)
@@ -28,4 +33,5 @@ void Object::render(SDL_Renderer *renderer)
     SDL_Rect dst = {x, y, w, h};
 
     SDL_RenderCopy(renderer, texture, NULL, &dst);
+    SDL_RenderPresent(renderer);
 }

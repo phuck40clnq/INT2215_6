@@ -1,18 +1,31 @@
 #include "player.h"
 
 // Constructor
-Player::Player(SDL_Renderer *renderer, char* imagePath, int _x, int _y)
+Player::Player(int x, int y, int w, int h, int frames)
+    : Object(x, y, w, h), frames(frames) {}
+
+// Player
+void Player::handle_event(const SDL_Event &event)
 {
-    player = IMG_LoadTexture(renderer, imagePath);
-    if (!player)
-    {
-        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "IMG_LoadTexture player failed: %s", IMG_GetError());
-        return;
-    }
+    return;
 }
 
-// Destructor
-Player::~Player()
+void Player::update()
 {
-    SDL_DestroyTexture(player);
+    for (int i = 0; i < 1000; i++)
+    {
+        if (x == 10)
+        {
+            x = 800;
+        }
+        x -= 5;
+    }
+    return;
+    
+}
+
+void Player::render(SDL_Renderer *renderer)
+{
+    Object::render(renderer);
+    return;
 }
