@@ -1,22 +1,34 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "bullet.h"
 #include "GameObject.h"
+#include <vector>
 
 class Player : public Object
 {
     int frames;
     int max_frames;
+    std::vector<Bullet> bullets;
     SDL_Rect src;
 
     public:
         // Constructor
-        Player(int x = 400, int y = 300, int w = 200, int h = 100, int frames = 0);
+        Player(SDL_Texture *texture, int x, int y, int w, int h, int frames);
+
+        SDL_Rect get_rect() { return {x, y, w, h}; }
+        std::vector<Bullet> &get_bullets() { return bullets; }
 
         // Running
         void handle_event(const SDL_Event &event);
+            // Hàm hỗ trợ
+            void move(const SDL_Event &event);
+            void fire_bullet(const SDL_Event &event);
+            
         void update() override;
+            void update_bullets();
         void render(SDL_Renderer *renderer) override;
+            void render_bullets(SDL_Renderer *renderer);
 };
 
 #endif

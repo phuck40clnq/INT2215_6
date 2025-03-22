@@ -30,8 +30,44 @@ bool Game::init(const char* title, int width, int height)
     }
 
     // For player
-    if (!player->LoadTexture(renderer, "../images/player.png"))
+    player_texture = IMG_LoadTexture(renderer, "../images/player.png");
+    if (!player_texture)
     {
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "LoadTexture player failed: %s", IMG_GetError());
+        return false;
+    }
+
+    player = new Player(player_texture, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 100, 100, 1);
+    if (player == NULL)
+    {
+        printf("Không thể tạo player!\n");
+        return false;
+    }
+
+    // For enemy
+    enemy_texture = IMG_LoadTexture(renderer, "../images/enemy.png");
+    if (!enemy_texture)
+    {
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "LoadTexture enemy failed: %s", IMG_GetError());
+        return false;
+    }
+
+    for (int i = 0; i < max_enemies; i++)
+    {
+        Enemy *enemy = new Enemy(enemy_texture, 800, 100 * i, 100, 100, 1, 1, 1, 5);
+        if (enemy == NULL)
+        {
+            SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Không thể tạo enemy!\n");
+            return false;
+        }
+        enemies.push_back(enemy);
+    }
+
+    // Load background
+    background = IMG_LoadTexture(renderer, "../images/background.jpg");
+    if (background == NULL)
+    {
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "IMG_LoadTexture background failed: %s", IMG_GetError());
         return false;
     }
 
@@ -42,59 +78,121 @@ bool Game::init(const char* title, int width, int height)
 }
 
 // Running game
-void handle_key_event(SDL_Event &event)
-{
-    /* switch(event.key.keysym.sym)
-    {
-        case SDL_KEYUP: 
-    } */
-   return;
-}
 void Game::handle_event()
 {
     SDL_Event event;
-
-    while (isRunning)
+    while (SDL_PollEvent(&event))
     {
-        while (SDL_PollEvent(&event))
-        {
-            if (event.type == SDL_QUIT)
-                isRunning = false;
+        if (event.type == SDL_QUIT)
+            isRunning = false;
 
-            if (event.type == SDL_KEYDOWN)
+        player->handle_event(event);
+        for (auto &enemy : enemies)
+        enemy->handle_event(event);
+    }
+    handle_collision();
+}
+
+    bool Game::check_collision(const SDL_Rect &a, const SDL_Rect &b)
+    {
+        if (a.x + a.w < b.x || a.x > b.x + b.w || a.y + a.h < b.y || a.y > b.y + b.h)
+            return false;
+        return true;
+    }
+
+    void Game::handle_collision()
+    {
+        for (auto enemy = enemies.begin(); enemy != enemies.end(); )
+        {
+            if ((*enemy)->active() && check_collision(player->get_rect(), (*enemy)->get_rect()))
             {
                 isRunning = false;
+                break;
             }
 
-            
+            auto &bullets = player->get_bullets();
+            for (auto bullet = bullets.begin(); bullet != bullets.end(); )
+            {
+                if (check_collision(bullet->get_rect(), (*enemy)->get_rect()))
+                {
+                    (*enemy)->hp -= 1;
+                    SDL_Log("HP: %d", (*enemy)->hp);
+                    bullet = bullets.erase(bullet);
+                    continue;
+                }
+                ++bullet;
+            }
+            if ((*enemy)->hp <= 0)
+            {
+                delete *enemy;
+                enemy = enemies.erase(enemy);
+                continue;
+            }
+            ++enemy;
         }
-        player->update();
-        SDL_RenderClear(renderer);
-
-        player->render(renderer);
-        SDL_Delay(1000);
     }
-}
 
+// Update game
 void Game::update_game()
 {
-    player->update();
+    if (player) player->update();
+    for (auto &enemy : enemies)
+    {
+        enemy->update();
+    }
     return;
 }
 
+// Renderer
 void Game::render()
 {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, background, NULL, NULL);
+
+    player->render(renderer);
+    for (auto &enemy : enemies) enemy->render(renderer);
+
     SDL_RenderPresent(renderer);
     return;
+}
+
+// Handle fps
+void Game::maintain_FPS()
+{
+    unsigned frame_start = SDL_GetTicks();
+
+    int frame_time = SDL_GetTicks() - frame_start;
+    int frame_delay = 1000 / fps;
+
+    if (frame_time < frame_delay)
+    {
+        SDL_Delay(frame_delay - frame_time);
+    }
 }
 
 // Clean game
 void Game::clean()
 {
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+    if (renderer)   SDL_DestroyRenderer(renderer);
+    if (window)     SDL_DestroyWindow(window);
+    if (player)
+    {
+        delete player;
+        player = nullptr;
+    }
+
+    // Destroy IMGs
+    if (player_texture) SDL_DestroyTexture(player_texture);
+    if (enemy_texture)  SDL_DestroyTexture(enemy_texture);
+    if (background) SDL_DestroyTexture(background);
+    for (auto &enemy : enemies)
+    {
+        if (enemy)  delete enemy;
+        enemy = nullptr;
+    }
+    IMG_Quit();
     SDL_Quit();
-    delete player;
     return;
 }
 

@@ -12,9 +12,13 @@ int main()
 
     while (game.running())
     {
+        // frameStart = SDL_GetTicks();
         game.handle_event();
         game.update_game();
         game.render();
+
+        // Handle fps
+        game.maintain_FPS();
     }
     
     game.clean();

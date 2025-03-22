@@ -11,11 +11,10 @@ class Object
         SDL_Texture *texture;
 
     public:
-        Object() : x(300), y(200), w(200), h(100) {}
-        Object(int x, int y, int w, int h);
-        ~Object();
+        Object(SDL_Texture *texture = nullptr, int x = 400, int y = random() % 400, int w = 100, int h = 100);
+        // ~Object();
 
-        bool LoadTexture(SDL_Renderer *renderer, const char* imagePath);
+        // bool LoadTexture(SDL_Renderer *renderer, const char* imagePath);
 
         virtual void update() = 0;
         virtual void render(SDL_Renderer *renderer);

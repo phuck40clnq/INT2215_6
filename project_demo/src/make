@@ -1,15 +1,26 @@
-player.o: player.cpp
-    g++ -c core/player.cpp -std=c++11
-
+game.o: game.cpp
     g++ -c core/game.cpp -std=c++11
 
 
-Object.o: Object.cpp
+player.o: player.cpp
+    g++ -c core/player.cpp -std=c++11
+
+enemy.o: enemy.cpp
+    g++ -c core/enemy.cpp -std=c++11
+
+
+GameObject.o: GameObject.cpp
     g++ -c core/GameObject.cpp -std=c++11
 
+bullet.o: bullet.cpp
+    g++ -c core/bullet.cpp -std=c++11
 
 game: main.o game.o player.o Object.o
-    g++ main.o game.o player.o GameObject.o -o hic -lSDL2 -lSDL2_image
+    g++ main.o game.o player.o GameObject.o enemy.o bullet.o -o hic -lSDL2 -lSDL2_image
+
 
 main.o: main.cpp   
     g++ -c game/main.cpp -std=c++11
+
+
+g++ -c game/main.cpp -std=c++11 -c core/game.cpp -std=c++11 -c core/player.cpp -std=c++11 -c core/GameObject.cpp -std=c++11 -c core/enemy.cpp -std=c++11 -c core/bullet.cpp -std=c++11
