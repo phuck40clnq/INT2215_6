@@ -3,15 +3,6 @@
 Bullet::Bullet(int x, int y, int s)
     : x(x), y(y), s(s), is_active(true) {}
 
-void Bullet::erase()
-{
-    if (!is_active)
-    {
-        y = -999;
-        x = -999;
-    }
-}
-
 Bullet::~Bullet() {}
 
 void Bullet::update()

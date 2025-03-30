@@ -29,6 +29,18 @@ bool Game::init(const char* title, int width, int height)
         return false;
     }
 
+    // Init audio
+    if (!music.init())
+    {
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Music init failed: %s", Mix_GetError());
+        return false;
+    }
+
+    // Load music
+    // music.loadmusic("background", "../music/background.mp3");
+    music.loadsound("shoot", "../music/gun_shoot.wav");
+    // music.loadsound("explosion", "../music/explosion.mp3");
+
     // For player
     player_texture = IMG_LoadTexture(renderer, "../images/player.png");
     if (!player_texture)
@@ -113,6 +125,11 @@ void Game::handle_event()
             auto &bullets = player->get_bullets();
             for (auto bullet = bullets.begin(); bullet != bullets.end(); )
             {
+                if (!bullet->active())
+                {
+                    bullet = bullets.erase(bullet);
+                    continue;
+                }
                 if (check_collision(bullet->get_rect(), (*enemy)->get_rect()))
                 {
                     (*enemy)->hp -= 1;
@@ -191,6 +208,7 @@ void Game::clean()
         if (enemy)  delete enemy;
         enemy = nullptr;
     }
+    Mix_Quit();
     IMG_Quit();
     SDL_Quit();
     return;

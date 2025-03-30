@@ -20,9 +20,10 @@ class Game
     private:
         SDL_Window *window;
         SDL_Renderer *renderer;
-        bool isRunning;
+        bool isRunning, isMenu;
         Player *player; SDL_Texture *player_texture;
         std::vector<Enemy*> enemies; SDL_Texture *enemy_texture;
+        Music music;
 
         SDL_Texture *background;
 
@@ -32,6 +33,7 @@ class Game
         // Initialize and clean the game
         bool init(const char* title, int width, int height);
         void clean();
+        bool menu() { return isMenu; };
         bool running() { return isRunning; };
 
         // Game run

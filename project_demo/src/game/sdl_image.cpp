@@ -1,6 +1,8 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 
 using namespace std;
 
@@ -21,11 +23,30 @@ int main()
         return 1;
     }
 
+    // Init audio
+    if (Mix_Init(MIX_INIT_MP3) == 0)
+    {
+        cout << "Mix_Init failed: " << Mix_GetError() << endl;
+        IMG_Quit();
+        SDL_Quit();
+    }
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    {
+        cout << "Mix_OpenAudio failed: " << Mix_GetError() << endl;
+        Mix_Quit();
+        IMG_Quit();
+        SDL_Quit();
+    }
+
+    cout << "SDL_Mixer initialized successfully!" << endl;
+
     // Tạo window
     SDL_Window *window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     if (window == NULL)
     {
         cout << "SDL_CreateWindow failed: " << SDL_GetError() << endl;
+        Mix_Quit();
+        IMG_Quit();
         SDL_Quit();
         return 1;
     }
@@ -36,21 +57,42 @@ int main()
     {
         cout << "SDL_CreateRenderer failed: " << SDL_GetError() << endl;
         SDL_DestroyWindow(window);
+        Mix_Quit();
+        IMG_Quit();
         SDL_Quit();
         return 1;
     }
 
     // Tải background và nhân vật
-    SDL_Texture *background = IMG_LoadTexture(render, "images/background.jpg");
-    SDL_Texture *player = IMG_LoadTexture(render, "images/player.png");
+    SDL_Texture *background = IMG_LoadTexture(render, "../../images/background.jpg");
+    SDL_Texture *player = IMG_LoadTexture(render, "../../images/player.png");
     if (!background || !player)
     {
         cout << "IMG_LoadTexture failed: " << IMG_GetError() << endl;
         SDL_DestroyRenderer(render);
         SDL_DestroyWindow(window);
+        Mix_Quit();
+        IMG_Quit();
         SDL_Quit();
         return 1;
     }
+
+    // Tải nhạc nền và hiệu ứng âm thanh
+    Mix_Music *backgroundMusic = Mix_LoadMUS("music/background.mp3");
+    Mix_Chunk *moveSound = Mix_LoadWAV("sounds/move.wav");
+    
+    if (!backgroundMusic || !moveSound) {
+        cout << "Error loading sound: " << Mix_GetError() << endl;
+        SDL_DestroyRenderer(render);
+        SDL_DestroyWindow(window);
+        Mix_Quit();
+        IMG_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    Mix_PlayMusic(backgroundMusic, -1);
+    // Mix_Play
 
     SDL_Rect playerRect = { 400, 300, 50, 50 };
 
@@ -89,6 +131,8 @@ int main()
     SDL_DestroyTexture(player);
     SDL_DestroyRenderer(render);
     SDL_DestroyWindow(window);
+    Mix_CloseAudio();
+    Mix_Quit();
     IMG_Quit();
     SDL_Quit();
 }
