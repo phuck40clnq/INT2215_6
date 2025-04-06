@@ -1,4 +1,4 @@
-#include "music.h"
+#include "../include/music.h"
 
 bool Music::init()
 {
@@ -15,26 +15,28 @@ bool Music::init()
     return true;
 }
 
-void Music::loadmusic(const char* name, const char* path)
+bool Music::loadmusic(const char* name, const char* path)
 {
     Mix_Music *music = Mix_LoadMUS(path);
     if (!music)
     {
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "MixLoadMUS failed: %s", Mix_GetError());
-        return;
+        return false;
     }
     music_tracks[name] = music;
+    return true;
 }
 
-void Music::loadsound(const char* name, const char* path)
+bool Music::loadsound(const char* name, const char* path)
 {
     Mix_Chunk *sound = Mix_LoadWAV(path);
     if (!sound)
     {
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "MixLoadWAV failed: %s", Mix_GetError());
-        return;
+        return false;
     }
     music_sounds[name] = sound;
+    return true;
 }
 
 void Music::playmusic(const char* name)
@@ -55,8 +57,14 @@ void Music::setvolume(int volume)
 
 void Music::clean()
 {
-    for (auto& music : music_tracks)    Mix_FreeMusic(music.second);
-    for (auto& sound : music_sounds)    Mix_FreeChunk(sound.second);
+    for (auto& music : music_tracks)
+    {
+        if (music.second)   Mix_FreeMusic(music.second);
+    }
+    for (auto& sound : music_sounds)
+    {
+        if (sound.second)   Mix_FreeChunk(sound.second);
+    }
     music_tracks.clear();
     music_sounds.clear();
     Mix_CloseAudio();

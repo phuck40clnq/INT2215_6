@@ -5,7 +5,7 @@
 
 #define width_bullet 10
 #define height_bullet 10
-#define speed 5
+#define speed_bullet 5
 
 class Bullet
 {

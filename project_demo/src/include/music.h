@@ -13,9 +13,9 @@ class Music
 
     public:
         bool init();
-        void loadmusic(const char* name, const char* path);
+        bool loadmusic(const char* name, const char* path);
         void playmusic(const char* name);
-        void loadsound(const char* name, const char* path);
+        bool loadsound(const char* name, const char* path);
         void playsound(const char* name);
         void setvolume(int volume = 128);
 

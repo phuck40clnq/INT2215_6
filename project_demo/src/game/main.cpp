@@ -1,4 +1,4 @@
-#include "../core/game.h"
+#include "../include/game.h"
 
 int main()
 {
@@ -10,11 +10,10 @@ int main()
         return 1;
     }
 
-    while (game.running())
+    while (is_running())
     {
-        // frameStart = SDL_GetTicks();
         game.handle_event();
-        game.update_game();
+        game.update();
         game.render();
 
         // Handle fps

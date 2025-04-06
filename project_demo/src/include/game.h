@@ -1,14 +1,16 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "enemy.h"
-#include "player.h"
+#include "../include/Game_gameover.h"
+#include "../include/Game_menu.h"
+#include "../include/Game_playing.h"
 
 // Fps
 #define fps 60
 
 // Max number of enemies
-#define max_enemies 5
+#define max_enemies 20
+#define ENEMY 6
 
 // Size of window
 #define SCREEN_WIDTH 800
@@ -20,12 +22,12 @@ class Game
     private:
         SDL_Window *window;
         SDL_Renderer *renderer;
-        bool isRunning, isMenu;
-        Player *player; SDL_Texture *player_texture;
-        std::vector<Enemy*> enemies; SDL_Texture *enemy_texture;
         Music music;
-
         SDL_Texture *background;
+
+        Game_Playing* game;
+        Game_Menu* menu;
+        Game_Gameover* gameover;
 
     public:
         SDL_Renderer* get_renderer() { return renderer; }
@@ -33,20 +35,21 @@ class Game
         // Initialize and clean the game
         bool init(const char* title, int width, int height);
         void clean();
-        bool menu() { return isMenu; };
-        bool running() { return isRunning; };
+        void clean_data();
+        void new_menu();
+        void new_game();
+        void new_gameover();
 
         // Game run
         void handle_event();
-            bool check_collision(const SDL_Rect &a, const SDL_Rect &b);
-            void handle_collision();
-        void update_game();
+        void update();
         void render();
 
         void maintain_FPS();
 
+
         // Private constructor
-        Game() : window(NULL), renderer(NULL), isRunning(false) {}
+        Game() : window(NULL), renderer(NULL) {}
         ~Game();
 };
 

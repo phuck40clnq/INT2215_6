@@ -1,26 +1,12 @@
-game.o: game.cpp
-    g++ -c core/game.cpp -std=c++11
+g++ game/main.cpp -std=c++11 \
+    core/game.cpp core/player.cpp core/GameObject.cpp core/enemy.cpp core/bullet.cpp core/music.cpp \
+    func/handle_collision.cpp \
+    screen/button.cpp screen/Game_gameover.cpp screen/Game_menu.cpp screen/Game_playing.cpp screen/Game_state.cpp \
+    -o hic -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
 
-player.o: player.cpp
-    g++ -c core/player.cpp -std=c++11
 
-enemy.o: enemy.cpp
-    g++ -c core/enemy.cpp -std=c++11
+g++ -c game/main.cpp core/game.cpp core/player.cpp core/GameObject.cpp core/enemy.cpp core/bullet.cpp core/music.cpp func/handle_collision.cpp -std=c++11
 
-
-GameObject.o: GameObject.cpp
-    g++ -c core/GameObject.cpp -std=c++11
-
-bullet.o: bullet.cpp
-    g++ -c core/bullet.cpp -std=c++11
-
-game: main.o game.o player.o Object.o
-    g++ main.o game.o player.o GameObject.o enemy.o bullet.o music.o -o hic -lSDL2 -lSDL2_image -lSDL2_mixer
-
-
-main.o: main.cpp   
-    g++ -c game/main.cpp -std=c++11
-
-
-g++ -c game/main.cpp core/game.cpp core/player.cpp core/GameObject.cpp core/enemy.cpp core/bullet.cpp core/music.cpp -std=c++11
+g++ main.o game.o player.o GameObject.o enemy.o bullet.o music.o handle_collision.o -o hic -lSDL2 -lSDL2_image -lSDL2_mixer
+./hic

@@ -1,8 +1,11 @@
-#include "player.h"
+#include "../include/player.h"
 
 // Constructor
 Player::Player(SDL_Texture *texture, int x, int y, int w, int h, int frames)
-    : Object(texture, x, y, w, h), frames(frames) {
+    // : Object(texture, x, y, w, h), frames(frames) {
+    : texture(texture), x(x), y(y), w(w), h(h), frames(frames)
+    {
+
         shoot_sound = Mix_LoadWAV("../music/gun_shoot.wav");
         if (shoot_sound == NULL)
         {
@@ -18,60 +21,40 @@ Player::Player(SDL_Texture *texture, int x, int y, int w, int h, int frames)
 // Handle event
 void Player::handle_event(const SDL_Event &event)
 {
-    if (event.type == SDL_KEYDOWN)
+    if (event.type == SDL_KEYDOWN && !event.key.repeat)
     {
-        move(event);
         fire_bullet(event);
+        keys[event.key.keysym.scancode] = true;
     }
     else if (event.type == SDL_KEYUP)
     {
-        move_sound_playing = false;
-        Mix_HaltChannel(0);
-        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Player stop move sound");
+        keys[event.key.keysym.scancode] = false;
+
+        if (!keys[SDL_SCANCODE_UP] && !keys[SDL_SCANCODE_DOWN] && !keys[SDL_SCANCODE_LEFT] && !keys[SDL_SCANCODE_RIGHT])
+        {
+            Mix_HaltChannel(0);
+            move_sound_playing = false;
+        }
+
+    }
+    
+}
+
+
+void Player::fire_bullet(const SDL_Event &event)
+{
+    if (event.key.keysym.sym == SDLK_SPACE)
+    {
+        Player::bullets.push_back(Bullet(x + w / 2, y + h / 4, speed_bullet));
+        Mix_PlayChannel(1, shoot_sound, 0);
     }
 }
 
-    void Player::move(const SDL_Event &event)
-    {
-        bool moved = false;
-        
-        switch (event.key.keysym.sym)
-        {
-            case SDLK_UP:   y -= 10; moved = true; break;
-            case SDLK_DOWN: y += 10; moved = true; break;
-            case SDLK_LEFT: x -= 10; moved = true; break;
-            case SDLK_RIGHT: x += 10; moved = true; break;
-        }
-
-        if (moved) {
-            if (!move_sound_playing) {  // Chỉ phát âm thanh khi bắt đầu di chuyển
-                Mix_PlayChannel(0, move_sound, -1);  // Luôn dùng kênh 0 cho di chuyển
-                move_sound_playing = true;
-                SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Player move sound");
-            }
-        } else {
-            if (move_sound_playing) {  // Chỉ dừng nếu trước đó đang di chuyển
-                Mix_HaltChannel(0);  // Dừng đúng kênh 0
-                move_sound_playing = false;
-                SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Player stop move sound");
-            }
-        }
-
-        
-    }
-
-    void Player::fire_bullet(const SDL_Event &event)
-    {
-        if (event.key.keysym.sym == SDLK_SPACE)
-        {
-            Player::bullets.push_back(Bullet(x + w / 2, y, speed));
-            Mix_PlayChannel(-1, shoot_sound, 0);
-        }
-    }
 
 // Update
 void Player::update()
 {
+    move();
     update_bullets();
     return;
 }
@@ -90,10 +73,40 @@ void Player::update()
         }
     }
 
+    void Player::move()
+    {
+        bool moved = false;
+        
+        if (keys[SDL_SCANCODE_UP])      { if (y < 0) y = 5; y -= 2; moved = true; }
+        if (keys[SDL_SCANCODE_DOWN])    { if (y + h > 600) y = 600 - h - 5; y += 2; moved = true; }
+        if (keys[SDL_SCANCODE_LEFT])    { if (x < 0) x = 5; x -= 2; moved = true; }
+        if (keys[SDL_SCANCODE_RIGHT])   { if (x + w > 800) x = 800 - w - 5; x += 2; moved = true; }
+
+        if (moved) 
+        {
+            if (!move_sound_playing) 
+            {
+                Mix_PlayChannel(0, move_sound, -1);
+                move_sound_playing = true;
+            }
+        } 
+        else 
+        {
+            if (move_sound_playing) 
+            {
+                Mix_HaltChannel(0);
+                move_sound_playing = false;
+            }
+        }
+    }
+
+
 // Renderer
 void Player::render(SDL_Renderer *renderer)
 {
-    Object::render(renderer);
+    // Object::render(renderer);
+    SDL_Rect dst = {x, y, w, h};
+    SDL_RenderCopy(renderer, texture, NULL, &dst);
     render_bullets(renderer);
     return;
 }

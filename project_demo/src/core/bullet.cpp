@@ -1,4 +1,4 @@
-#include "bullet.h"
+#include "../include/bullet.h"
 
 Bullet::Bullet(int x, int y, int s)
     : x(x), y(y), s(s), is_active(true) {}
@@ -7,7 +7,7 @@ Bullet::~Bullet() {}
 
 void Bullet::update()
 {
-    x += speed;
+    x += speed_bullet;
     if (x > 800)
     {
         is_active = false;

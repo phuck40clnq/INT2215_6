@@ -1,4 +1,4 @@
-#include "GameObject.h"
+#include "../include/GameObject.h"
 
 // Constructor
 Object::Object(SDL_Texture *texture, int x, int y, int w, int h) 
@@ -35,6 +35,5 @@ Object::Object(SDL_Texture *texture, int x, int y, int w, int h)
 void Object::render(SDL_Renderer *renderer)
 {
     SDL_Rect dst = {x, y, w, h};
-
     SDL_RenderCopy(renderer, texture, NULL, &dst);
 }
