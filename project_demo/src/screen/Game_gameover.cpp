@@ -3,6 +3,8 @@
 
 #include <cstring>
 
+#include "../func/render_text.h"
+
 void Game_Gameover::init(SDL_Renderer* renderer)
 {
     // Load music
@@ -10,13 +12,22 @@ void Game_Gameover::init(SDL_Renderer* renderer)
     // if (!music.loadsound("touch_button", "../music/buttontouch.mp3")) return;
 
     music.setvolume();
-    // Load background
-    texture = IMG_LoadTexture(renderer, "../images/background.jpg");
-    if (texture == NULL)
+
+    // Load font
+    font = TTF_OpenFont("../font/font1.ttf", 35);
+    if (font == NULL)
     {
-        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "IMG_LoadTexture background failed: %s", IMG_GetError());
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "TTF_OpenFont font_gameover failed: %s", IMG_GetError());
         return;
     }
+
+    // Load background
+    // texture = IMG_LoadTexture(renderer, "../images/background.jpg");
+    // if (texture == NULL)
+    // {
+    //     SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "IMG_LoadTexture background failed: %s", IMG_GetError());
+    //     return;
+    // }
 
     return;
 }
@@ -27,8 +38,11 @@ void Game_Gameover::create_buttons()
     buttons.push_back(Button(300, 250, 200, 50, "Retry"));
     buttons.push_back(Button(300, 350, 200, 50, "Exit"));
 
-    for (auto& button : buttons) 
-        button.set_font(font);
+    if (font)
+    {
+        for (auto& button : buttons) 
+            button.set_font(font);
+    }
 }
 
 void Game_Gameover::handle_event()
@@ -56,6 +70,10 @@ void Game_Gameover::handle_event()
 
 void Game_Gameover::render(SDL_Renderer* renderer)
 {
+    SDL_Rect tmp = {0, 0, 800, 600};
+    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+    SDL_RenderFillRect(renderer, &tmp);
+
     if (texture) 
     {
         SDL_Rect background_gameover = {0, 0, 800, 600};
@@ -73,8 +91,16 @@ void Game_Gameover::render(SDL_Renderer* renderer)
 
 void Game_Gameover::clean()
 {
-    if (!texture) SDL_DestroyTexture(texture);
-    if (font != nullptr) TTF_CloseFont(font);
+    if (texture)
+    {
+        SDL_DestroyTexture(texture);
+        texture = nullptr;
+    }
+    if (font)
+    {
+        TTF_CloseFont(font);
+        font = nullptr;
+    }
 
     buttons.clear();
 }

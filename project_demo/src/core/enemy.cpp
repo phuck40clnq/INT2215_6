@@ -1,7 +1,7 @@
 #include "../include/enemy.h"
 #include <random>
 
-Enemy::Enemy(SDL_Texture *texture, int x, int y, int w, int h, int speed, int frames, int hp)
+Enemy::Enemy(SDL_Texture *texture, int x, int y, int w, int h, float speed, int frames, int hp)
     // : Object(texture, x, y, w, h), speed(speed), frames(frames), max_frames(max_frames), hp(hp) 
     : texture(texture), x(x), y(y), w(w), h(h), frames(frames), hp(hp)
 {
@@ -21,7 +21,7 @@ void Enemy::handle_event(const SDL_Event &event)
 
 void Enemy::update()
 {
-    x -= 1;
+    x -= speed;
     if (x < 0)
     {
         x = 800;

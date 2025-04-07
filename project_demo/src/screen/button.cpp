@@ -8,24 +8,30 @@ bool Button::is_touch(int mouse_x, int mouse_y)
     return mouse_x >= x && mouse_x <= x + w && mouse_y >= y && mouse_y <= y + h;
 }
 
-void Button::render(SDL_Renderer *renderer, int mouse_x, int mouse_y)
+void Button::render(SDL_Renderer *renderer, int mouse_x, int mouse_y, bool change_color_touch, int pos)
 {
     SDL_Rect button_rect = {x, y, w, h};
-    if (is_touch(mouse_x, mouse_y))
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);    // Green button
+    if (change_color_touch)     // Button change color
+    {
+        if (is_touch(mouse_x, mouse_y))
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);    // Green button
+        else
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);    // Red button
+    }
     else
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);    // Red button
+        SDL_SetRenderDrawColor(renderer, 255, 255, 153, 255);    // Yellow
+        // SDL_SetRenderDrawColor(renderer, 245, 245, 220, 255);       // Light beige
 
     SDL_RenderFillRect(renderer, &button_rect);
 
     if (!font)  return;
-
     // Draw into the rect
     SDL_Color text_color = {0, 0, 0, 255};  // Black
     SDL_Surface* text_surface = TTF_RenderText_Solid(font, text, text_color);
     if (!text_surface)
     {
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Can not create text_surface: %s", TTF_GetError());
+        return;
     }
 
     SDL_Texture* text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
@@ -33,9 +39,14 @@ void Button::render(SDL_Renderer *renderer, int mouse_x, int mouse_y)
     {
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Can not create text_texture: %s", TTF_GetError());
         SDL_FreeSurface(text_surface);
+        return;
     }
 
-    SDL_Rect text_rect = {x + (w - text_surface->w) / 2, y + (h - text_surface->h) / 2, text_surface->w, text_surface->h};
+    SDL_Rect text_rect;
+    if (pos == 0)        text_rect = {x + (w - text_surface->w) / 2, y + (h - text_surface->h) / 2 + 5, text_surface->w, text_surface->h};
+    else if (pos == -1)  text_rect = {x + 5, y + (h - text_surface->h) / 2 + 5, text_surface->w, text_surface->h};
+    else if (pos == 1)   text_rect = {x + (w - text_surface->w) - 5, y + (h - text_surface->h) / 2 + 5, text_surface->w, text_surface->h};
+
 
     SDL_RenderCopy(renderer, text_texture, nullptr, &text_rect);
 

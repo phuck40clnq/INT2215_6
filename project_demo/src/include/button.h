@@ -12,11 +12,11 @@ class Button
         TTF_Font* font;
     public:
         Button(int x, int y, int w, int h, const char* text);
-        ~Button() { if (font != nullptr) TTF_CloseFont(font); }
+        ~Button() {}
 
         const char* get_text() const { return text; }
         bool is_touch(int mouse_x, int mouse_y);
-        void render(SDL_Renderer *renderer, int mouse_x, int mouse_y);
+        void render(SDL_Renderer *renderer, int mouse_x, int mouse_y, bool change_color_touch = true, int pos = 0);
         void set_font(TTF_Font* font) { this->font = font; }
 };
 

@@ -8,10 +8,6 @@
 // Fps
 #define fps 60
 
-// Max number of enemies
-#define max_enemies 20
-#define ENEMY 6
-
 // Size of window
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600

@@ -23,8 +23,14 @@ class Player// : public Object
     Animation *animation;
 
     public:
+        // Player level
+        int player_level = 1;
+        int player_exp = 0;
+        int exp_next_level = 10;
+
+
         // Constructor
-        Player(SDL_Texture *texture, int x=350, int y=250, int w=100, int h=100, int frames=1);
+        Player(SDL_Texture *texture, int x=360, int y=270, int w=80, int h=80, int frames=1);
         ~Player() { if (move_sound) Mix_FreeChunk(move_sound); if (shoot_sound) Mix_FreeChunk(shoot_sound); }
 
         SDL_Rect get_rect() { return {x, y, w, h}; }

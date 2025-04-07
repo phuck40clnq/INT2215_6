@@ -17,6 +17,12 @@ bool Game::init(const char* title, int width, int height)
         return false;
     }
 
+    if (TTF_Init() == -1)
+    {
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "TTF_Init failed: %s", TTF_GetError());
+        return false;
+    }
+
     window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == NULL)
     {
@@ -173,6 +179,7 @@ void Game::clean()
 
     Mix_Quit();
     IMG_Quit();
+    TTF_Quit();
     SDL_Quit();
     return;
 }

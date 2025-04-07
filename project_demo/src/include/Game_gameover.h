@@ -16,7 +16,7 @@ class Game_Gameover
         std::vector<Button> buttons;
 
     public:
-        Game_Gameover(SDL_Renderer* renderer) { init(renderer); create_buttons(); this->texture = nullptr; this->font = nullptr; }
+        Game_Gameover(SDL_Renderer* renderer) { init(renderer); create_buttons(); }
         ~Game_Gameover() { clean(); }
 
         void init(SDL_Renderer* renderer);

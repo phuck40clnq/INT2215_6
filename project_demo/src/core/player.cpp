@@ -45,7 +45,7 @@ void Player::fire_bullet(const SDL_Event &event)
 {
     if (event.key.keysym.sym == SDLK_SPACE)
     {
-        Player::bullets.push_back(Bullet(x + w / 2, y + h / 4, speed_bullet));
+        for (int i = 0; i < player_level; i++)  Player::bullets.push_back(Bullet(x + w / 2, y + h / 4, speed_bullet));
         Mix_PlayChannel(1, shoot_sound, 0);
     }
 }
