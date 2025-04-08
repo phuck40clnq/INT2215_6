@@ -13,7 +13,12 @@ void handle_collision(Game_Playing &game)
     {
         if (!(*enemy)->active())
         {
-            ++enemy;
+            delete *enemy;
+            enemy = game.enemies.erase(enemy);
+            game.enemies.push_back(new Enemy(game.enemy_texture));
+            
+            game.score += 10;
+            game.player->player_exp += 2;
             continue;
         }
         if (check_collision(game.player->get_rect(), (*enemy)->get_rect()))
@@ -38,16 +43,7 @@ void handle_collision(Game_Playing &game)
             }
             ++bullet;
         }
-        if ((*enemy)->hp <= 0)
-        {
-            delete *enemy;
-            enemy = game.enemies.erase(enemy);
-            game.enemies.push_back(new Enemy(game.enemy_texture));
-            
-            game.score += 10;
-            game.player->player_exp += 2;
-            continue;
-        }
+        
         ++enemy;
     }
 }

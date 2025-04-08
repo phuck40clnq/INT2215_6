@@ -10,7 +10,7 @@ Enemy::Enemy(SDL_Texture *texture, int x, int y, int w, int h, float speed, int 
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> dist(0, 5);
-        this->y = dist(gen) * 100;
+        this->y = dist(gen) * 85 + 80;
     }
 }
 
@@ -21,7 +21,7 @@ void Enemy::handle_event(const SDL_Event &event)
 
 void Enemy::update()
 {
-    x -= speed;
+    x -= 1;
     if (x < 0)
     {
         x = 800;
