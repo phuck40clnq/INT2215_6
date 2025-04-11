@@ -4,13 +4,14 @@
 
 #include "../func/handle_collision.h"
 #include "../func/render_text.h"
+#include "../func/level_up.h"
 
 void Game_Playing::create_buttons()
 {
     buttons.push_back(Button(10, 10, 170, 50, "Time: "));
-    buttons.push_back(Button(220, 10, 120, 50, "Score: "));
-    buttons.push_back(Button(370, 10, 125, 50, "Level: "));
-    buttons.push_back(Button(520, 10, 150, 50, "Exp: "));
+    buttons.push_back(Button(220, 10, 160, 50, "Score: "));
+    buttons.push_back(Button(410, 10, 125, 50, "Level: "));
+    buttons.push_back(Button(560, 10, 155, 50, "Exp: "));
 
 
     for (auto& button : buttons) 
@@ -29,7 +30,9 @@ void Game_Playing::render_for_buttons(SDL_Renderer* renderer, int score, int tim
     if (seconds < 10) time_text += "0";
     time_text += std::to_string(seconds);
 
-    std::string score_text = "" + std::to_string(score);
+    std::string score_text = "";
+    if (score < 10) score_text += "0";
+    score_text += std::to_string(score);
 
     std::string level_text = "";
     if (player->player_level < 10) level_text += "0";
@@ -39,8 +42,8 @@ void Game_Playing::render_for_buttons(SDL_Renderer* renderer, int score, int tim
 
     render_text(renderer, time_text.c_str(), 90, 21, font2);
     render_text(renderer, score_text.c_str(), 310, 21, font2);
-    render_text(renderer, level_text.c_str(), 455, 21, font2);
-    render_text(renderer, exp_text.c_str(), 585, 21, font2);
+    render_text(renderer, level_text.c_str(), 495, 21, font2);
+    render_text(renderer, exp_text.c_str(), 625, 21, font2);
 }
 
 void Game_Playing::init(SDL_Renderer* renderer)
@@ -91,7 +94,7 @@ void Game_Playing::init(SDL_Renderer* renderer)
 
     for (int i = 0; i < ENEMY; i++)
     {
-        Enemy *enemy = new Enemy(enemy_texture, 800, 80+85*i);
+        Enemy *enemy = new Enemy(enemy_texture, enemy_speed, enemy_hp, 800, 80+85*i);
         if (enemy == NULL)
         {
             SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Không thể tạo enemy!\n");
@@ -107,6 +110,9 @@ void Game_Playing::init(SDL_Renderer* renderer)
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "IMG_LoadTexture background failed: %s", IMG_GetError());
         return;
     }
+
+    time_delay.start(1000);
+    time_delay_enemy.start(12000);
 
     return;
 }
@@ -135,6 +141,16 @@ void Game_Playing::update()
     {
         enemy->update();
     }
+
+    // Update time
+    if (time_delay.is_finished())
+    {
+        time_seconds++;
+        time_delay.start(1000);
+    }
+
+    update_feature_level(*this);
+
     return;
 }
 
@@ -159,14 +175,6 @@ void Game_Playing::render(SDL_Renderer* renderer)
     }
 
     render_for_buttons(renderer, score, time_seconds);
-
-    Uint32 current_time = SDL_GetTicks();
-
-    if (current_time - last_time >= 1000) 
-    {
-        time_seconds++;
-        last_time = current_time;
-    }
 
     return;
 }

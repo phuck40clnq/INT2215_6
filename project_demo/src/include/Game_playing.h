@@ -19,9 +19,18 @@ class Game_Playing
 
     int time_seconds = 0;
     unsigned last_time = 0;
+    TimeDelay time_delay;
 
     public:
+        // Features
+        // For player
         int score = 0;
+
+        // For enemy
+        float enemy_speed = 1.f;
+        float enemy_hp = 5.f;
+
+        TimeDelay time_delay_enemy;
         Player *player; SDL_Texture *player_texture;
         std::vector<Enemy*> enemies; SDL_Texture *enemy_texture; int current_enemy = ENEMY;
 

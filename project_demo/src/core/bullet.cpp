@@ -1,13 +1,14 @@
 #include "../include/bullet.h"
 
-Bullet::Bullet(int x, int y, int s)
-    : x(x), y(y), s(s), is_active(true) {}
+Bullet::Bullet(int x, int y, float s, float damage)
+    : x(x), y(y), s(s), damage(damage), is_active(true) 
+    {}
 
 Bullet::~Bullet() {}
 
 void Bullet::update()
 {
-    x += speed_bullet;
+    x += s;
     if (x > 800)
     {
         is_active = false;

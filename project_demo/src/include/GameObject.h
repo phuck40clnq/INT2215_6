@@ -2,6 +2,7 @@
 #define GAME_OBJECT_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 class Object
 {
@@ -11,9 +12,9 @@ class Object
 
     public:
         Object(SDL_Texture *texture = nullptr, int x = 400, int y = 400, int w = 100, int h = 100);
-        // ~Object();
+        ~Object();
 
-        // bool LoadTexture(SDL_Renderer *renderer, const char* imagePath);
+        bool LoadTexture(SDL_Renderer *renderer, const char* imagePath);
 
         virtual void update() = 0;
         virtual void render(SDL_Renderer *renderer);

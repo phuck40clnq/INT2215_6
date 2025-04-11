@@ -5,17 +5,16 @@
 
 #define width_bullet 10
 #define height_bullet 10
-#define speed_bullet 5
 
 class Bullet
 {
     int x, y;
-    int s;
+    float s;
     public:
         bool is_active;
-
+        float damage;
         // Constructor and Destructor
-        Bullet(int x, int y, int s);
+        Bullet(int x, int y, float s = 5.f, float damage = 2.f);
         ~Bullet();
 
         SDL_Rect get_rect() { return {x, y, width_bullet, height_bullet}; }

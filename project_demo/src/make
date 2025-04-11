@@ -1,6 +1,6 @@
 g++ game/main.cpp -std=c++11 \
     core/game.cpp core/player.cpp core/GameObject.cpp core/enemy.cpp core/bullet.cpp core/music.cpp \
-    func/handle_collision.cpp func/render_text.cpp \
+    func/handle_collision.cpp func/render_text.cpp func/level_up.cpp \
     screen/button.cpp screen/Game_gameover.cpp screen/Game_menu.cpp screen/Game_playing.cpp screen/Game_state.cpp \
     -o hic -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf \
     

@@ -12,17 +12,35 @@ void level_up_player(Game_Playing &game)
     return;
 }
 
-void level_up_game(Game_Playing &game)
+void level_up_enemy(Game_Playing &game, TimeDelay &delay)
+{
+    if (delay.is_finished())
+    {
+        game.enemy_speed += 0.05f;
+        game.enemy_hp += 1.f;
+
+        printf(">>> Level up enemy: hp=%.2f, speed=%.2f\n", game.enemy_hp, game.enemy_speed);
+
+        delay.start(12000);
+    }
+}
+
+void buff(Game_Playing &game)
 {
 
 }
 
-void level_up_enemy(Game_Playing &game)
+void random_skill(Game_Playing &game)
 {
-    
+    if (game.player->next_upgrade == game.player->player_level)
+    {
+        game.player->next_upgrade += 3;
+        // stared()
+    }
 }
 
-void check_level(Game_Playing &game)
+void update_feature_level(Game_Playing &game)
 {
-
+    level_up_player(game);
+    level_up_enemy(game, game.time_delay_enemy);
 }
