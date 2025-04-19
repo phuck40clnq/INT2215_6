@@ -78,20 +78,20 @@ int main()
     }
 
     // Tải nhạc nền và hiệu ứng âm thanh
-    Mix_Music *backgroundMusic = Mix_LoadMUS("music/background.mp3");
-    Mix_Chunk *moveSound = Mix_LoadWAV("sounds/move.wav");
+    // Mix_Music *backgroundMusic = Mix_LoadMUS("music/background.mp3");
+    // Mix_Chunk *moveSound = Mix_LoadWAV("sounds/move.wav");
     
-    if (!backgroundMusic || !moveSound) {
-        cout << "Error loading sound: " << Mix_GetError() << endl;
-        SDL_DestroyRenderer(render);
-        SDL_DestroyWindow(window);
-        Mix_Quit();
-        IMG_Quit();
-        SDL_Quit();
-        return 1;
-    }
+    // if (!backgroundMusic || !moveSound) {
+    //     cout << "Error loading sound: " << Mix_GetError() << endl;
+    //     SDL_DestroyRenderer(render);
+    //     SDL_DestroyWindow(window);
+    //     Mix_Quit();
+    //     IMG_Quit();
+    //     SDL_Quit();
+    //     return 1;
+    // }
 
-    Mix_PlayMusic(backgroundMusic, -1);
+    // Mix_PlayMusic(backgroundMusic, -1);
     // Mix_Play
 
     SDL_Rect playerRect = { 400, 300, 50, 50 };
@@ -112,8 +112,8 @@ int main()
             {
                 switch(event.key.keysym.sym)
                 {
-                    case SDLK_UP:    playerRect.y += 5; break;
-                    case SDLK_DOWN:  playerRect.y -= 5; break;
+                    case SDLK_UP:    playerRect.y -= 5; break;
+                    case SDLK_DOWN:  playerRect.y += 5; break;
                     case SDLK_LEFT:  playerRect.x -= 5; break;
                     case SDLK_RIGHT: playerRect.x += 5; break;
                 }
@@ -122,6 +122,31 @@ int main()
 
         SDL_RenderClear(render);
         SDL_RenderCopy(render, background, NULL, NULL);
+
+        SDL_Rect rect = { 100, 100, 200, 200 };
+
+
+
+        // SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_BLEND);
+        // // Vẽ một hình chữ nhật bán trong suốt
+        // SDL_SetRenderDrawColor(render, 255, 0, 0, 128); // Màu đỏ với alpha 128 (nửa trong suốt)
+        // SDL_RenderFillRect(render, &rect);
+
+
+         // Vẽ nền với viền trong suốt
+        SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(render, 0, 0, 0, 180);  // Màu đen với alpha 180 (mờ)
+        SDL_RenderFillRect(render, &rect);
+
+        // Vẽ viền với độ trong suốt (alpha)
+        SDL_SetRenderDrawColor(render, 0, 0, 0, 255);  // Màu đen không trong suốt (alpha = 255)
+        SDL_RenderDrawRect(render, &rect);  // Vẽ viền của hình chữ nhật
+
+
+
+
+        SDL_SetRenderDrawColor(render, 0, 0, 0, 255); // Đặt lại màu vẽ về đen
+
         SDL_RenderCopy(render, player, NULL, &playerRect);
         SDL_RenderPresent(render);
         SDL_Delay(10);

@@ -5,6 +5,8 @@
 #include "../include/Game_menu.h"
 #include "../include/Game_playing.h"
 
+#include "../include/board.h"
+
 // Fps
 #define fps 60
 
@@ -19,11 +21,12 @@ class Game
         SDL_Window *window;
         SDL_Renderer *renderer;
         Music music;
-        SDL_Texture *background;
 
         Game_Playing* game;
         Game_Menu* menu;
         Game_Gameover* gameover;
+        
+        Board* instruction;
 
     public:
         SDL_Renderer* get_renderer() { return renderer; }
@@ -35,6 +38,7 @@ class Game
         void new_menu();
         void new_game();
         void new_gameover();
+        void new_instruction();
 
         // Game run
         void handle_event();
@@ -44,9 +48,9 @@ class Game
         void maintain_FPS();
 
 
-        // Private constructor
-        Game() : window(NULL), renderer(NULL) {}
-        ~Game();
+        // Constructor
+        Game();
+        ~Game() { clean(); }
 };
 
 #endif

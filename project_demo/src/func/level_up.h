@@ -13,6 +13,7 @@ void random_skill(Game_Playing &game);
 // Buff enemy
 void level_up_enemy(Game_Playing &game);
 void bossed(Game_Playing &game);
+void big_boss(Game_Playing &game);
 
 void update_feature_level(Game_Playing &game);
 

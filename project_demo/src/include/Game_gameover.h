@@ -12,11 +12,11 @@ class Game_Gameover
     private:
         TTF_Font* font;
         SDL_Texture* texture;
-        Music music;
+        Music* music;
         std::vector<Button> buttons;
 
     public:
-        Game_Gameover(SDL_Renderer* renderer) { init(renderer); create_buttons(); }
+        Game_Gameover(SDL_Renderer* renderer, Music* music) : music(music) { init(renderer); create_buttons(); }
         ~Game_Gameover() { clean(); }
 
         void init(SDL_Renderer* renderer);

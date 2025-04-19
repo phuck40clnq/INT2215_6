@@ -14,7 +14,6 @@ class Game_Playing
 {
     TTF_Font* font1, *font2;
     std::vector<Button> buttons;
-    Music music;
     SDL_Texture *background;
 
     int time_seconds = 0;
@@ -30,11 +29,16 @@ class Game_Playing
         float enemy_speed = 1.f;
         float enemy_hp = 5.f;
 
+        float enemy_bigboss_speed = 0.3f;
+        float enemy_bigboss_hp = 20.f;
+
         TimeDelay time_delay_enemy;
         Player *player; SDL_Texture *player_texture;
         std::vector<Enemy*> enemies; SDL_Texture *enemy_texture; int current_enemy = ENEMY;
 
-        Game_Playing(SDL_Renderer* renderer) { init(renderer); create_buttons(); }
+        Music* music;
+
+        Game_Playing(SDL_Renderer* renderer, Music* music) : music(music) { init(renderer); create_buttons(); }
         ~Game_Playing() { clean(); }
 
         void create_buttons();

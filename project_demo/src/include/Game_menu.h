@@ -13,10 +13,10 @@ class Game_Menu
         TTF_Font* font, *welcome_font;
         SDL_Texture* texture;
         std::vector<Button> buttons;
-        Music music;
+        Music* music;
 
     public:
-        Game_Menu(SDL_Renderer* renderer) { init(renderer); create_buttons(); }
+        Game_Menu(SDL_Renderer* renderer, Music* music) : music(music) { init(renderer); create_buttons(); }
         ~Game_Menu() { clean(); }
 
         void init(SDL_Renderer* renderer);

@@ -3,7 +3,7 @@
 #include <string>
 
 #include "../func/handle_collision.h"
-#include "../func/render_text.h"
+#include "../func/render.h"
 #include "../func/level_up.h"
 
 void Game_Playing::create_buttons()
@@ -49,11 +49,8 @@ void Game_Playing::render_for_buttons(SDL_Renderer* renderer, int score, int tim
 void Game_Playing::init(SDL_Renderer* renderer)
 {
     // Load music
-    // if (!music.loadmusic("background", "../music/background.mp3"))   return;
-    // if (!music.loadsound("shoot", "../music/gun_shoot.wav"))    return;
-    // if (!music.loadsound("explosion", "../music/explosion.mp3")) return;
-
-    music.setvolume();
+    music->loadsound("player_move", "../music/sound_effect/player_move_sound.wav");
+    music->loadsound("player_shoot", "../music/sound_effect/gun_shoot.wav");
 
     // Load font
     font1 = TTF_OpenFont("../font/font3.ttf", 30);
@@ -77,7 +74,7 @@ void Game_Playing::init(SDL_Renderer* renderer)
         return;
     }
 
-    player = new Player(player_texture);
+    player = new Player(music, player_texture);
     if (player == NULL)
     {
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "LoadTexture player failed: %s", IMG_GetError());
@@ -94,7 +91,7 @@ void Game_Playing::init(SDL_Renderer* renderer)
 
     for (int i = 0; i < ENEMY; i++)
     {
-        Enemy *enemy = new Enemy(enemy_texture, enemy_speed, enemy_hp, 800, 80+85*i);
+        Enemy *enemy = new Enemy(music, enemy_texture, enemy_speed, enemy_hp, 800, 80+85*i);
         if (enemy == NULL)
         {
             SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Không thể tạo enemy!\n");
@@ -104,7 +101,7 @@ void Game_Playing::init(SDL_Renderer* renderer)
     }
 
     // Load background
-    background = IMG_LoadTexture(renderer, "../images/background.jpg");
+    background = IMG_LoadTexture(renderer, "../images/background_playing.jpg");
     if (!background)
     {
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "IMG_LoadTexture background failed: %s", IMG_GetError());
@@ -126,7 +123,7 @@ void Game_Playing::handle_event()
         if (event.type == SDL_QUIT) set_running(false);
 
         player->handle_event(event);
-        for (auto &enemy : enemies)
+        for (auto& enemy : enemies)
             enemy->handle_event(event);
     }
     // Check for collision
@@ -137,7 +134,7 @@ void Game_Playing::handle_event()
 void Game_Playing::update()
 {
     if (player) player->update();
-    for (auto &enemy : enemies)
+    for (auto& enemy : enemies)
     {
         enemy->update();
     }
@@ -164,14 +161,14 @@ void Game_Playing::render(SDL_Renderer* renderer)
     }
 
     player->render(renderer);
-    for (auto &enemy : enemies) enemy->render(renderer);
+    for (auto& enemy : enemies) enemy->render(renderer);
 
-    int mouse_x, mouse_y;
-    SDL_GetMouseState(&mouse_x, &mouse_y);
+    // int mouse_x, mouse_y;
+    // SDL_GetMouseState(&mouse_x, &mouse_y);
 
     for (auto& button : buttons) 
     {
-        button.render(renderer, mouse_x, mouse_y, false, -1);
+        button.render(renderer, -1, -1, false, -1);
     }
 
     render_for_buttons(renderer, score, time_seconds);
@@ -187,7 +184,7 @@ void Game_Playing::clean()
         player = nullptr;
     }
 
-    for (auto &enemy : enemies)
+    for (auto& enemy : enemies)
     {
         if (enemy)  delete enemy;
         enemy = nullptr;

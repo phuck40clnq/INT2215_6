@@ -6,8 +6,10 @@
 enum GAME_STATE
 {
     MENU,
+    INSTRUCTION,
     PLAYING,
-    GAME_OVER
+    GAME_OVER,
+    SETTING,
 };
 
 GAME_STATE get_state();

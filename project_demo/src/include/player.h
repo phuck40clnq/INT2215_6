@@ -17,8 +17,9 @@ class Player// : public Object
     int max_frames;
     std::vector<Bullet> bullets;
     SDL_Rect src;
-    Mix_Chunk *move_sound; bool move_sound_playing = false;
-    Mix_Chunk *shoot_sound;
+
+    bool move_sound_playing = false;
+    Music* music;
 
     // Buff
     float speed, bullet_speed, bullet_damage;
@@ -41,13 +42,18 @@ class Player// : public Object
         int exp_next_level = 10;
         int next_upgrade = 3;
 
+        bool buff = false;
         int combo_kill_count = 0;
+        void buff_player(int sec, Uint32 current_time);
         void combo();
+
+        void update_data();
+        void update_data_bullet();
 
 
         // Constructor
-        Player(SDL_Texture *texture, int x=360, int y=270, int w=80, int h=80, int frames=1);
-        ~Player() { if (move_sound) Mix_FreeChunk(move_sound); if (shoot_sound) Mix_FreeChunk(shoot_sound); }
+        Player(Music* music, SDL_Texture *texture, int x=360, int y=270, int w=80, int h=80, int frames=1);
+        ~Player() { clean(); }
 
         SDL_Rect get_rect() { return {x, y, w, h}; }
         std::vector<Bullet> &get_bullets() { return bullets; }
@@ -65,6 +71,8 @@ class Player// : public Object
             void update_bullets();
         void render(SDL_Renderer *renderer); //override;
             void render_bullets(SDL_Renderer *renderer);
+
+        void clean();
 };
 
 #endif

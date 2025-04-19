@@ -1,8 +1,17 @@
 #include "../include/game.h"
-#include <SDL2/SDL_image.h>
-
 
 // Initialize
+Game::Game()
+{ 
+    this->window = NULL;
+    this->renderer = NULL;
+    this->game = nullptr;
+    this->menu = nullptr;
+    this->gameover = nullptr;
+    this->instruction = nullptr;
+    // this->setting = nullptr;
+}
+
 bool Game::init(const char* title, int width, int height)
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -44,9 +53,11 @@ bool Game::init(const char* title, int width, int height)
         return false;
     }
 
-    this->menu = nullptr;
-    this->game = nullptr;
-    this->gameover = nullptr;
+    // Load music
+    music.loadmusic("background_menu", "../music/background/Exotics.mp3");
+    music.loadmusic("background_playing", "../music/background/Interstellar.mp3");
+    music.loadmusic("background_gameover", "../music/background/Exotics.mp3");
+
 
     // Success
     set_running(true);
@@ -61,6 +72,15 @@ void Game::handle_event()
     {
         new_menu();
         menu->handle_event();
+    }
+    else if (get_state() == SETTING)
+    {
+        return;
+    }
+    else if (get_state() == INSTRUCTION)
+    {
+        new_instruction();
+        instruction->handle_event();
     }
     else if (get_state() == PLAYING)
     {
@@ -92,6 +112,15 @@ void Game::render()
         new_menu();
         menu->render(renderer);
     }
+    else if (get_state() == SETTING)
+    {
+        return;
+    }
+    else if (get_state() == INSTRUCTION)
+    {
+        new_instruction();
+        instruction->render();
+    }
     else if (get_state() == PLAYING)
     {
         new_game();
@@ -109,7 +138,11 @@ void Game::render()
 // Clean screen for each case
 void Game::new_menu()
 {
-    if (menu == nullptr)    menu = new Game_Menu(renderer);
+    if (menu == nullptr)
+    {
+        menu = new Game_Menu(renderer, &music);
+        music.playmusic("background_menu", true);
+    }
     if (game)
     {
         game->clean();
@@ -119,12 +152,23 @@ void Game::new_menu()
     {
         gameover->clean();
         gameover = nullptr;
+    }
+    if (instruction)
+    {
+        instruction->clean();
+        delete instruction;
+        instruction = nullptr;
     }
 }
 
 void Game::new_game()
 {
-    if (game == nullptr)    game = new Game_Playing(renderer);
+
+    if (game == nullptr)
+    {
+        game = new Game_Playing(renderer, &music);
+        music.playmusic("background_playing", true);
+    }
     if (menu)
     {
         menu->clean();
@@ -135,11 +179,21 @@ void Game::new_game()
         gameover->clean();
         gameover = nullptr;
     }
+    if (instruction)
+    {
+        instruction->clean();
+        delete instruction;
+        instruction = nullptr;
+    }
 }
 
 void Game::new_gameover()
 {
-    if (gameover == nullptr)    gameover = new Game_Gameover(renderer);
+    if (gameover == nullptr)
+    {
+        gameover = new Game_Gameover(renderer, &music);
+        music.playmusic("background_gameover", true);
+    }
     if (menu)
     {
         menu->clean();
@@ -150,8 +204,40 @@ void Game::new_gameover()
         game->clean();
         game = nullptr;
     }
+    if (instruction)
+    {
+        instruction->clean();
+        delete instruction;
+        instruction = nullptr;
+    }
 }
 
+void Game::new_instruction()
+{
+    if (instruction == nullptr)    instruction = new Board(renderer, SCREEN_WIDTH / 2 - 360, SCREEN_HEIGHT / 2 - 270, 720, 540, 2);
+
+    instruction->set_text({
+        "INSTRUCTION",
+        "1. Nhấn phím mũi tên lên/xuống, trái/phải để di chuyển",
+        "2. Nhấn phím Space để bắn",
+    });
+
+    if (menu)
+    {
+        menu->clean();
+        menu = nullptr;
+    }
+    if (game)
+    {
+        game->clean();
+        game = nullptr;
+    }
+    if (gameover)
+    {
+        gameover->clean();
+        gameover = nullptr;
+    }
+}
 
 // Handle fps
 void Game::maintain_FPS()
@@ -204,9 +290,10 @@ void Game::clean_data()
         delete gameover;
         gameover = nullptr;
     }
-}
-
-Game::~Game()
-{
-    clean();
+    if (instruction)
+    {
+        instruction->clean();
+        delete instruction;
+        instruction = nullptr;
+    }
 }

@@ -6,4 +6,6 @@
 bool check_collision(const SDL_Rect &a, const SDL_Rect &b);
 void handle_collision(Game_Playing &game);
 
+void enemy_die(Game_Playing &game, Enemy **enemy);
+
 #endif

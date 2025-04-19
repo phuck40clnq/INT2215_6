@@ -1,35 +1,15 @@
 #include "../include/player.h"
 
 // Constructor
-Player::Player(SDL_Texture *texture, int x, int y, int w, int h, int frames)
+Player::Player(Music* music, SDL_Texture *texture, int x, int y, int w, int h, int frames)
     // : Object(texture, x, y, w, h), frames(frames) {
-    : texture(texture), x(x), y(y), w(w), h(h), frames(frames)
+    : music(music), texture(texture), x(x), y(y), w(w), h(h), frames(frames)
     {
-        shoot_sound = Mix_LoadWAV("../music/gun_shoot.wav");
-        if (shoot_sound == NULL)
-        {
-            SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Player load sound failed: %s", Mix_GetError());
-        }
-        move_sound = Mix_LoadWAV("../music/player_move_sound.wav");
-        if (move_sound == NULL)
-        {
-            SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Player load sound failed: %s", Mix_GetError());
-        }
-
         // Set default values
-        this->normal_speed = 2.f + player_level * 0.05f;
-        this->normal_bullet_speed = 5.f + player_level * 0.05f;
-        this->normal_bullet_damage = 2.f + player_level * 0.05f;
+        update_data();
 
-        this->speed = 2.f + player_level * 0.05f;
-        this->bullet_speed = 5.f + player_level * 0.05f;
-        this->bullet_damage = 2.f + player_level * 0.05f;
         this->fx = x;
         this->fy = y;
-
-        this->buff_speed = speed * player_level * 0.1f;
-        this->buff_bullet_speed = bullet_speed * player_level * 0.1f;
-        this->buff_bullet_damage = bullet_damage * player_level * 0.1f;
     }
 
 // Handle event
@@ -96,12 +76,39 @@ void Player::update()
         }
     }
 
+    // void Player::update_bullets()
+    // {
+    //     auto it = bullets.begin();
+    //     while (it != bullets.end())
+    //     {
+    //         it->update();
+    //         if (!it->active())
+    //             it = bullets.erase(it);
+    //         else
+    //             ++it;
+    //     }
+    // }
+
     void Player::fire_bullet()
     {
         if (fired)
         {
-            for (int i = 0; i < player_level; i++)  Player::bullets.push_back(Bullet(x + w / 2, y + h / 4, bullet_speed, bullet_damage));
-            Mix_PlayChannel(1, shoot_sound, 0);
+            update_data_bullet();
+            
+            int spacing = 10;
+            int num_bullets = player_level / 10 + 1;
+            if (num_bullets > 5) num_bullets = 5;
+            for (int i = 0; i < num_bullets; i++)
+            {
+                int offset = (i - num_bullets / 2) * spacing;
+                int bullet_x = x + w / 2 + offset;
+                int bullet_y = y + h / 4;
+                // Player::bullets.push_back(Bullet(x + w / 2, y + h / 4, bullet_speed, bullet_damage));
+                Player::bullets.push_back(Bullet(bullet_x, bullet_y, bullet_speed, bullet_damage));
+                SDL_Log("Bullet %i fired!", i);
+            }
+            SDL_Log("Bullet: bullet_speed=%.2f, bullet_damage=%.2f", bullet_speed, bullet_damage);
+            music->playsound("player_shoot", 1);
             fired = false;
         }
     }
@@ -124,7 +131,7 @@ void Player::update()
         {
             if (!move_sound_playing) 
             {
-                Mix_PlayChannel(0, move_sound, -1);
+                music->playsound("player_move", 0, true);
                 move_sound_playing = true;
             }
         } 
@@ -157,37 +164,33 @@ void Player::render(SDL_Renderer *renderer)
         }
     }
 
+void Player::clean()
+{
+    return;
+}
+
 
 // Features
 void Player::combo()
 {
     Uint32 current_time = SDL_GetTicks();
 
+    if (buff)
+    {
+        buff_player(5, current_time);
+        buff = false;
+    }
+
     // Locked combos
     if (current_time - last_combo_reset_time < 15000)
         return;
 
     // Reset combo
-    // combo_kill_count > 0 && 
     if (current_time - last_combo_time < 5000)
     {
         if (combo_kill_count >= 5 && !buff_timer.is_active())
         {
-            // Buff 3 sec
-            buff_timer.start(3000);
-            SDL_Log("-------->>> BUFF - COMBO KILL: %d", combo_kill_count);
-
-            // Buff speed
-            speed += buff_speed;
-
-            // Buff bullet speed and damage
-            bullet_speed += buff_bullet_speed;
-            bullet_damage += buff_bullet_damage;
-
-            last_combo_reset_time = current_time;
-
-            // Others
-            SDL_SetTextureColorMod(texture, 255, 255, 0);
+            buff_player(3, current_time);
         }
     }
 
@@ -199,4 +202,48 @@ void Player::combo()
         SDL_Log(">>> COMBO RESET");
         SDL_Log(">>> ----------------COMBO KILL: %d", combo_kill_count);
     }
+}
+
+void Player::buff_player(int sec, Uint32 current_time)
+{
+    update_data();
+
+    // Buff 3 sec
+    buff_timer.start(sec * 1000);
+    SDL_Log("-------->>> BUFF - COMBO KILL: %d", combo_kill_count);
+
+    // Buff speed
+    speed += buff_speed;
+
+    // Buff bullet speed and damage
+    bullet_speed += buff_bullet_speed;
+    bullet_damage += buff_bullet_damage;
+
+    last_combo_reset_time = current_time;
+
+    // Others
+    SDL_SetTextureColorMod(texture, 255, 255, 0);
+}
+
+// Update data
+void Player::update_data()
+{
+    this->normal_speed = 2.f + player_level * 0.05f;
+    this->speed = 2.f + player_level * 0.05f;
+    this->buff_speed = speed * player_level * 0.1f;
+
+    update_data_bullet();
+}
+
+// Update data bullet
+void Player::update_data_bullet()
+{
+    this->normal_bullet_speed = 5.f + player_level * 0.05f;
+    this->normal_bullet_damage = 2.f + player_level * 0.05f;
+
+    this->bullet_speed = 5.f + player_level * 0.05f;
+    this->bullet_damage = 2.f + player_level * 0.05f;
+
+    this->buff_bullet_speed = bullet_speed * player_level * 0.1f;
+    this->buff_bullet_damage = bullet_damage * player_level * 0.1f;
 }

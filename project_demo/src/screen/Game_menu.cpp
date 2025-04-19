@@ -3,38 +3,35 @@
 
 #include <cstring>
 
-#include "../func/render_text.h"
+#include "../func/render.h"
 
 void Game_Menu::init(SDL_Renderer* renderer)
 {
     // Load music
-    // if (!music.loadmusic("background1", "../music/background1.mp3"))   return;
-    // if (!music.loadsound("touch_button", "../music/buttontouch.mp3")) return;
-
-    music.setvolume();
+    music->loadsound("click_button_menu", "../music/sound_effect/soft_click.wav");
 
     // Load font
     font = TTF_OpenFont("../font/font3.ttf", 30);
     if (font == NULL)
     {
-        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "TTF_OpenFont font_menu failed: %s", IMG_GetError());
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "TTF_OpenFont font_menu failed: %s", TTF_GetError());
         return;
     }
 
     welcome_font = TTF_OpenFont("../font/font3.ttf", 100);
     if (welcome_font == NULL)
     {
-        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "TTF_OpenFont font_menu failed: %s", IMG_GetError());
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "TTF_OpenFont font_menu failed: %s", TTF_GetError());
         return;
     }
 
     // Load background
-    // texture = IMG_LoadTexture(renderer, "../images/background.jpg");
-    // if (texture == NULL)
-    // {
-    //     SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "IMG_LoadTexture background failed: %s", IMG_GetError());
-    //     return;
-    // }
+    texture = IMG_LoadTexture(renderer, "../images/background_menu.jpg");
+    if (texture == NULL)
+    {
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "IMG_LoadTexture background failed: %s", IMG_GetError());
+        return;
+    }
 
     return;
 }
@@ -43,7 +40,8 @@ void Game_Menu::create_buttons()
 {
     buttons.push_back(Button(300, 270, 200, 50, "Play"));
     buttons.push_back(Button(300, 350, 200, 50, "Instruction"));
-    buttons.push_back(Button(300, 420, 200, 50, "Exit"));
+    buttons.push_back(Button(300, 430, 200, 50, "Setting"));
+    buttons.push_back(Button(300, 510, 200, 50, "Exit"));
     if (font)
     {
         for (auto& button : buttons) 
@@ -58,7 +56,7 @@ void Game_Menu::handle_event()
     {
         if (event.type == SDL_QUIT) set_running(false);
 
-        if (event.type == SDL_MOUSEBUTTONDOWN)
+        if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
         {
             int x, y;
             SDL_GetMouseState(&x, &y);
@@ -66,7 +64,10 @@ void Game_Menu::handle_event()
             for (auto& button : buttons)
             {
                 if (!button.is_touch(x, y)) continue;
+                music->playsound("click_button_menu", -1, false);
                 if (strcmp(button.get_text(), "Play") == 0) set_state(PLAYING);
+                if (strcmp(button.get_text(), "Instruction") == 0) set_state(INSTRUCTION);
+                if (strcmp(button.get_text(), "Setting") == 0) set_state(SETTING);
                 if (strcmp(button.get_text(), "Exit") == 0) set_running(false);
             }
         }

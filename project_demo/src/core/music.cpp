@@ -39,14 +39,32 @@ bool Music::loadsound(const char* name, const char* path)
     return true;
 }
 
-void Music::playmusic(const char* name)
+void Music::playmusic(const char* name, bool loop)
 {
-    Mix_PlayMusic(music_tracks[name], 0);
+    if (music_tracks.find(name) == music_tracks.end())
+    {
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Music not found: %s", name);
+        return;
+    }
+    if (Mix_PlayingMusic() == 1)
+    {
+        Mix_HaltMusic();
+    }
+
+    if (loop)   Mix_PlayMusic(music_tracks[name], 1);
+    else        Mix_PlayMusic(music_tracks[name], 0);
 }
 
-void Music::playsound(const char* name)
+void Music::playsound(const char* name, int channel, bool loop)
 {
-    Mix_PlayChannel(-1, music_sounds[name], 0);
+    if (music_sounds.find(name) == music_sounds.end())
+    {
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Sound not found: %s", name);
+        return;
+    }
+    
+    if (loop)   Mix_PlayChannel(channel, music_sounds[name], -1);
+    else        Mix_PlayChannel(channel, music_sounds[name], 0);
 }
 
 void Music::setvolume(int volume) 
