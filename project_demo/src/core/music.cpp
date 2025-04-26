@@ -15,28 +15,28 @@ bool Music::init()
     return true;
 }
 
-bool Music::loadmusic(const char* name, const char* path)
+void Music::loadmusic(const char* name, const char* path)
 {
     Mix_Music *music = Mix_LoadMUS(path);
     if (!music)
     {
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "MixLoadMUS failed: %s", Mix_GetError());
-        return false;
+        return;
     }
     music_tracks[name] = music;
-    return true;
+    return;
 }
 
-bool Music::loadsound(const char* name, const char* path)
+void Music::loadsound(const char* name, const char* path)
 {
     Mix_Chunk *sound = Mix_LoadWAV(path);
     if (!sound)
     {
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "MixLoadWAV failed: %s", Mix_GetError());
-        return false;
+        return;
     }
     music_sounds[name] = sound;
-    return true;
+    return;
 }
 
 void Music::playmusic(const char* name, bool loop)
@@ -67,10 +67,24 @@ void Music::playsound(const char* name, int channel, bool loop)
     else        Mix_PlayChannel(channel, music_sounds[name], 0);
 }
 
-void Music::setvolume(int volume) 
+void Music::setvolume(int volume, const char* name) 
 {
-    for (auto& music : music_tracks)    Mix_VolumeMusic(volume);
-    for (auto& sound : music_sounds)    Mix_VolumeChunk(sound.second, volume);
+    if (name)
+    {
+        if (music_tracks.find(name) != music_tracks.end())
+        {
+            Mix_VolumeMusic(volume);
+        }
+        else if (music_sounds.find(name) != music_sounds.end())
+        {
+            Mix_VolumeChunk(music_sounds[name], volume);
+        }
+    }
+    else
+    {
+        for (auto& music : music_tracks)   Mix_VolumeMusic(volume);
+        for (auto& sound : music_sounds)   Mix_VolumeChunk(sound.second, volume);
+    }
 }
 
 void Music::clean()
@@ -86,4 +100,5 @@ void Music::clean()
     music_tracks.clear();
     music_sounds.clear();
     Mix_CloseAudio();
+    Mix_Quit();
 }

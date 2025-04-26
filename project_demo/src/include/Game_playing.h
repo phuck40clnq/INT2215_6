@@ -1,6 +1,7 @@
 #ifndef GAME_PLAYING_H
 #define GAME_PLAYING_H
 
+#include "board.h"
 #include "button.h"
 #include "enemy.h"
 #include "player.h"
@@ -12,13 +13,14 @@
 
 class Game_Playing
 {
-    TTF_Font* font1, *font2;
     std::vector<Button> buttons;
-    SDL_Texture *background;
+    SDL_Texture* background;
 
     int time_seconds = 0;
     unsigned last_time = 0;
     TimeDelay time_delay;
+
+    Board* instruction,* setting;
 
     public:
         // Features
@@ -33,20 +35,22 @@ class Game_Playing
         float enemy_bigboss_hp = 20.f;
 
         TimeDelay time_delay_enemy;
-        Player *player; SDL_Texture *player_texture;
-        std::vector<Enemy*> enemies; SDL_Texture *enemy_texture; int current_enemy = ENEMY;
+        Player* player; SDL_Texture* player_texture;
+        std::vector<Enemy*> enemies; SDL_Texture* enemy_texture; int current_enemy = ENEMY;
 
+        SDL_Renderer* renderer;
         Music* music;
+        Font* font;
 
-        Game_Playing(SDL_Renderer* renderer, Music* music) : music(music) { init(renderer); create_buttons(); }
+        Game_Playing(SDL_Renderer* renderer, Music* music, Font* font, Board* instruction, Board* setting);
         ~Game_Playing() { clean(); }
 
         void create_buttons();
-        void init(SDL_Renderer* renderer);
-        void handle_event();
+        void init();
+        void handle_event(SDL_Event& event);
         void update();
-        void render(SDL_Renderer* renderer);
-        void render_for_buttons(SDL_Renderer* renderer, int score, int time_seconds);
+        void render();
+        void render_for_buttons(int score, int time_seconds);
         void clean();
 };
 

@@ -3,17 +3,29 @@
 
 #include <SDL2/SDL.h>
 
-enum GAME_STATE
+enum class GAME_STATE
 {
     MENU,
-    INSTRUCTION,
     PLAYING,
     GAME_OVER,
     SETTING,
 };
 
+enum class OVERLAY
+{
+    NONE,
+    INSTRUCTION,
+    PAUSE,
+};
+
 GAME_STATE get_state();
 void set_state(GAME_STATE state);
+GAME_STATE get_previous_state();
+
+OVERLAY get_overlay();
+void set_overlay(OVERLAY overlay);
+
+
 bool is_running();
 void set_running(bool new_running);
 

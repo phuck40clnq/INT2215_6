@@ -1,11 +1,9 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "../include/Game_gameover.h"
-#include "../include/Game_menu.h"
-#include "../include/Game_playing.h"
-
-#include "../include/board.h"
+#include "Game_gameover.h"
+#include "Game_menu.h"
+#include "Game_playing.h"
 
 // Fps
 #define fps 60
@@ -18,17 +16,23 @@
 class Game
 {
     private:
+        // Frames
+        unsigned frame_start;
+        int frame_delay = 1000 / fps;
+
         SDL_Window *window;
         SDL_Renderer *renderer;
-        Music music;
 
         Game_Playing* game;
         Game_Menu* menu;
         Game_Gameover* gameover;
-        
-        Board* instruction;
+
+        Board* instruction,* pause;
+        Music music;
+        Font font;
 
     public:
+
         SDL_Renderer* get_renderer() { return renderer; }
 
         // Initialize and clean the game
@@ -45,8 +49,8 @@ class Game
         void update();
         void render();
 
-        void maintain_FPS();
-
+        void start_frame();
+        void end_frame();
 
         // Constructor
         Game();

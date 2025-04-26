@@ -1,0 +1,130 @@
+clang: error: no such file or directory: '
+    core/*.cpp
+    func/*.cpp
+    screen/*.cpp
+    game/main.cpp
+'
+clang: error: no such file or directory: '
+    core/*.cpp     func/*.cpp     screen/*.cpp     game/main.cpp '
+clang: error: no such file or directory: '
+    core/*.cpp     func/*.cpp     screen/*.cpp     game/main.cpp '
+clang: error: no input files
+ld: library not found for -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+ld: library not found for -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+ld: library not found for -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+clang: error: no such file or directory: 'core/*.cpp func/*.cpp screen/*.cpp game/main.cpp'
+clang: error: no such file or directory: 'core/*.cpp func/*.cpp screen/*.cpp game/main.cpp'
+clang: error: no such file or directory: 'core/*.cpp func/*.cpp screen/*.cpp game/main.cpp'
+clang: error: no such file or directory: 'core/*.cpp func/*.cpp screen/*.cpp game/main.cpp'
+clang: error: no such file or directory: 'core/*.cpp
+func/*.cpp
+screen/*.cpp
+game/main.cpp'
+core/animation.cpp:3:12: error: out-of-line definition of 'Animation' does not match any declaration in 'Animation'
+Animation::Animation(SDL_Texture *texture, int frame_width, int frame_height, int max_frames, float frame_time)
+           ^~~~~~~~~
+1 error generated.
+screen/Game_setting.cpp:62:67: error: use of undeclared identifier 'PLAYING'
+            if (strcmp(button.get_text(), "Play") == 0) set_state(PLAYING);
+                                                                  ^
+screen/Game_setting.cpp:63:74: error: use of undeclared identifier 'INSTRUCTION'
+            if (strcmp(button.get_text(), "Instruction") == 0) set_state(INSTRUCTION);
+                                                                         ^
+screen/Game_setting.cpp:64:70: error: use of undeclared identifier 'SETTING'
+            if (strcmp(button.get_text(), "Setting") == 0) set_state(SETTING);
+                                                                     ^
+3 errors generated.
+core/animation.cpp:3:12: error: out-of-line definition of 'Animation' does not match any declaration in 'Animation'
+Animation::Animation(SDL_Texture *texture, int frame_width, int frame_height, int max_frames, float frame_time)
+           ^~~~~~~~~
+1 error generated.
+screen/Game_setting.cpp:62:67: error: use of undeclared identifier 'PLAYING'
+            if (strcmp(button.get_text(), "Play") == 0) set_state(PLAYING);
+                                                                  ^
+screen/Game_setting.cpp:63:74: error: use of undeclared identifier 'INSTRUCTION'
+            if (strcmp(button.get_text(), "Instruction") == 0) set_state(INSTRUCTION);
+                                                                         ^
+screen/Game_setting.cpp:64:70: error: use of undeclared identifier 'SETTING'
+            if (strcmp(button.get_text(), "Setting") == 0) set_state(SETTING);
+                                                                     ^
+3 errors generated.
+Undefined symbols for architecture x86_64:
+  "_main", referenced from:
+     implicit entry/start for main executable
+ld: symbol(s) not found for architecture x86_64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+core/animation.cpp:3:12: error: out-of-line definition of 'Animation' does not match any declaration in 'Animation'
+Animation::Animation(SDL_Texture *texture, int frame_width, int frame_height, int max_frames, float frame_time)
+           ^~~~~~~~~
+1 error generated.
+screen/Game_setting.cpp:62:67: error: use of undeclared identifier 'PLAYING'
+            if (strcmp(button.get_text(), "Play") == 0) set_state(PLAYING);
+                                                                  ^
+screen/Game_setting.cpp:63:74: error: use of undeclared identifier 'INSTRUCTION'
+            if (strcmp(button.get_text(), "Instruction") == 0) set_state(INSTRUCTION);
+                                                                         ^
+screen/Game_setting.cpp:64:70: error: use of undeclared identifier 'SETTING'
+            if (strcmp(button.get_text(), "Setting") == 0) set_state(SETTING);
+                                                                     ^
+3 errors generated.
+Undefined symbols for architecture x86_64:
+  "_main", referenced from:
+     implicit entry/start for main executable
+ld: symbol(s) not found for architecture x86_64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+Undefined symbols for architecture x86_64:
+  "_main", referenced from:
+     implicit entry/start for main executable
+ld: symbol(s) not found for architecture x86_64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+Undefined symbols for architecture x86_64:
+  "_main", referenced from:
+     implicit entry/start for main executable
+ld: symbol(s) not found for architecture x86_64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+clang: error: no such file or directory: 'core/*.cpp func/*.cpp screen/*.cpp game/main.cpp'
+core/animation.cpp:3:12: error: out-of-line definition of 'Animation' does not match any declaration in 'Animation'
+Animation::Animation(SDL_Texture *texture, int frame_width, int frame_height, int max_frames, float frame_time)
+           ^~~~~~~~~
+1 error generated.
+screen/Game_setting.cpp:62:67: error: use of undeclared identifier 'PLAYING'
+            if (strcmp(button.get_text(), "Play") == 0) set_state(PLAYING);
+                                                                  ^
+screen/Game_setting.cpp:63:74: error: use of undeclared identifier 'INSTRUCTION'
+            if (strcmp(button.get_text(), "Instruction") == 0) set_state(INSTRUCTION);
+                                                                         ^
+screen/Game_setting.cpp:64:70: error: use of undeclared identifier 'SETTING'
+            if (strcmp(button.get_text(), "Setting") == 0) set_state(SETTING);
+                                                                     ^
+3 errors generated.
+core/animation.cpp:3:12: error: out-of-line definition of 'Animation' does not match any declaration in 'Animation'
+Animation::Animation(SDL_Texture *texture, int frame_width, int frame_height, int max_frames, float frame_time)
+           ^~~~~~~~~
+1 error generated.
+screen/Game_setting.cpp:62:67: error: use of undeclared identifier 'PLAYING'
+            if (strcmp(button.get_text(), "Play") == 0) set_state(PLAYING);
+                                                                  ^
+screen/Game_setting.cpp:63:74: error: use of undeclared identifier 'INSTRUCTION'
+            if (strcmp(button.get_text(), "Instruction") == 0) set_state(INSTRUCTION);
+                                                                         ^
+screen/Game_setting.cpp:64:70: error: use of undeclared identifier 'SETTING'
+            if (strcmp(button.get_text(), "Setting") == 0) set_state(SETTING);
+                                                                     ^
+3 errors generated.
+core/animation.cpp:3:12: error: out-of-line definition of 'Animation' does not match any declaration in 'Animation'
+Animation::Animation(SDL_Texture *texture, int frame_width, int frame_height, int max_frames, float frame_time)
+           ^~~~~~~~~
+1 error generated.
+screen/Game_setting.cpp:62:67: error: use of undeclared identifier 'PLAYING'
+            if (strcmp(button.get_text(), "Play") == 0) set_state(PLAYING);
+                                                                  ^
+screen/Game_setting.cpp:63:74: error: use of undeclared identifier 'INSTRUCTION'
+            if (strcmp(button.get_text(), "Instruction") == 0) set_state(INSTRUCTION);
+                                                                         ^
+screen/Game_setting.cpp:64:70: error: use of undeclared identifier 'SETTING'
+            if (strcmp(button.get_text(), "Setting") == 0) set_state(SETTING);
+                                                                     ^
+3 errors generated.

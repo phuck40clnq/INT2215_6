@@ -13,11 +13,11 @@ class Music
 
     public:
         bool init();
-        bool loadmusic(const char* name, const char* path);
+        void loadmusic(const char* name, const char* path);
         void playmusic(const char* name, bool loop = false);
-        bool loadsound(const char* name, const char* path);
+        void loadsound(const char* name, const char* path);
         void playsound(const char* name, int channel = -1, bool loop = false);
-        void setvolume(int volume = 128);
+        void setvolume(int volume = 128, const char* name = nullptr);
 
         void clean();
 

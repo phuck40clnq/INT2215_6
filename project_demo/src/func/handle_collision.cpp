@@ -53,7 +53,7 @@ void handle_collision(Game_Playing &game)
 
         else if (check_collision(game.player->get_rect(), (*enemy)->get_rect()))
         {
-            set_state(GAME_OVER);
+            set_state(GAME_STATE::GAME_OVER);
             break;
         }
 

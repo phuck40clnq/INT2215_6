@@ -12,12 +12,13 @@ int main()
 
     while (is_running())
     {
+        game.start_frame();
+
         game.handle_event();
         game.update();
         game.render();
 
-        // Handle fps
-        game.maintain_FPS();
+        game.end_frame();
     }
     
     game.clean();

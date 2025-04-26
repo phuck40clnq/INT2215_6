@@ -3,8 +3,8 @@
 
 // #include "GameObject.h"
 #include <SDL2/SDL.h>
-#include "../include/music.h"
-#include "../include/TimeDelay.h"
+#include "music.h"
+#include "TimeDelay.h"
 
 class Enemy// : public Object
 {

@@ -5,6 +5,8 @@
 #include <vector>
 
 #include "button.h"
+#include "music.h"
+
 
 #include "../func/render.h"
 
@@ -12,23 +14,26 @@ class Board
 {
     bool active;
     SDL_Rect rect, text_rect;
-    TTF_Font* font;
+
     std::vector<const char*> lines;
     SDL_Color text_color;
     SDL_Renderer* renderer;
     Button close_button;
     void draw_transparent();
 
-    public:
-        Board(SDL_Renderer* renderer, int x, int y, int w, int h, int key);
-        ~Board() { clean(); }
+    Music* music;
+    Font* font;
+    TTF_Font* current_font;
 
-        SDL_Renderer* get_renderer() const { return renderer; }
+    public:
+        Board(Music* music, Font* font, SDL_Renderer* renderer, int x, int y, int w, int h);
+        ~Board() { clean(); }
         
         void set_active(bool active) { this->active = active; }
-        bool is_active() const { return active; }
-        void set_text(std::vector<const char*> line, SDL_Color color={255, 255, 255, 255});
-        void handle_event();
+        bool is_active() { return active; }
+        void set_text(std::vector<const char*> line, SDL_Color text_color={255, 255, 255, 255});
+        void set_font(const char* name);
+        void handle_event(SDL_Event& event);
         void render(bool draw_transparent = false);
         void clean();
 };

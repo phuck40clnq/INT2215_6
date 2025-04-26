@@ -41,7 +41,7 @@ void render_hp(SDL_Renderer* renderer, float hp, float max_hp, int x, int y, int
     float ratio = float(hp) / max_hp;
     int hp_width = int (ratio * bar_width + 0.5f);
     int hp_bar_x = x + w / 2 - bar_width / 2;
-    int hp_bar_y = y + h + 5;
+    int hp_bar_y = y + h - 5;
 
     SDL_Rect hp_bar = {hp_bar_x, hp_bar_y, hp_width, bar_height};
 

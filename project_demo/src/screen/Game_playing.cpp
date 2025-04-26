@@ -6,19 +6,30 @@
 #include "../func/render.h"
 #include "../func/level_up.h"
 
+Game_Playing::Game_Playing(SDL_Renderer* renderer, Music* music, Font* font, Board* instruction, Board* setting)
+{ 
+    this->renderer = renderer;
+    this->music = music;
+    this->font = font;
+    this->instruction = instruction;
+    this->setting = setting;
+    init(); 
+    create_buttons(); 
+}
+
 void Game_Playing::create_buttons()
 {
-    buttons.push_back(Button(10, 10, 170, 50, "Time: "));
-    buttons.push_back(Button(220, 10, 160, 50, "Score: "));
-    buttons.push_back(Button(410, 10, 125, 50, "Level: "));
-    buttons.push_back(Button(560, 10, 155, 50, "Exp: "));
+    buttons.push_back(Button(font, 10, 10, 170, 50, "Time: "));
+    buttons.push_back(Button(font, 220, 10, 160, 50, "Score: "));
+    buttons.push_back(Button(font, 410, 10, 125, 50, "Level: "));
+    buttons.push_back(Button(font, 560, 10, 155, 50, "Exp: "));
 
 
     for (auto& button : buttons) 
-        button.set_font(font1);
+        button.set_font("font1");
 }
 
-void Game_Playing::render_for_buttons(SDL_Renderer* renderer, int score, int time_seconds)
+void Game_Playing::render_for_buttons(int score, int time_seconds)
 {
     int minutes = time_seconds / 60;
     int seconds = time_seconds % 60;
@@ -40,31 +51,18 @@ void Game_Playing::render_for_buttons(SDL_Renderer* renderer, int score, int tim
 
     std::string exp_text = "" + std::to_string(player->player_exp) + " / " + std::to_string(player->exp_next_level);
 
-    render_text(renderer, time_text.c_str(), 90, 21, font2);
-    render_text(renderer, score_text.c_str(), 310, 21, font2);
-    render_text(renderer, level_text.c_str(), 495, 21, font2);
-    render_text(renderer, exp_text.c_str(), 625, 21, font2);
+    render_text(renderer, time_text.c_str(), 90, 21, font->get_font("font2"));
+    render_text(renderer, score_text.c_str(), 310, 21, font->get_font("font2"));
+    render_text(renderer, level_text.c_str(), 495, 21, font->get_font("font2"));
+    render_text(renderer, exp_text.c_str(), 625, 21, font->get_font("font2"));
 }
 
-void Game_Playing::init(SDL_Renderer* renderer)
+void Game_Playing::init()
 {
     // Load music
     music->loadsound("player_move", "../music/sound_effect/player_move_sound.wav");
     music->loadsound("player_shoot", "../music/sound_effect/gun_shoot.wav");
 
-    // Load font
-    font1 = TTF_OpenFont("../font/font3.ttf", 30);
-    if (font1 == NULL)
-    {
-        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "TTF_OpenFont font_playing failed: %s", IMG_GetError());
-        return;
-    }
-    font2 = TTF_OpenFont("../font/font2.ttf", 28);
-    if (font2 == NULL)
-    {
-        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "TTF_OpenFont font_playing failed: %s", IMG_GetError());
-        return;
-    }
 
     // For player
     player_texture = IMG_LoadTexture(renderer, "../images/player.png");
@@ -91,7 +89,7 @@ void Game_Playing::init(SDL_Renderer* renderer)
 
     for (int i = 0; i < ENEMY; i++)
     {
-        Enemy *enemy = new Enemy(music, enemy_texture, enemy_speed, enemy_hp, 800, 80+85*i);
+        Enemy *enemy = new Enemy(music, enemy_texture, enemy_speed, enemy_hp, 800, 80+86*i);
         if (enemy == NULL)
         {
             SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Không thể tạo enemy!\n");
@@ -115,17 +113,11 @@ void Game_Playing::init(SDL_Renderer* renderer)
 }
 
 
-void Game_Playing::handle_event()
+void Game_Playing::handle_event(SDL_Event& event)
 {
-    SDL_Event event;
-    while (SDL_PollEvent(&event))
-    {
-        if (event.type == SDL_QUIT) set_running(false);
-
-        player->handle_event(event);
-        for (auto& enemy : enemies)
-            enemy->handle_event(event);
-    }
+    player->handle_event(event);
+    for (auto& enemy : enemies)
+        enemy->handle_event(event);
     // Check for collision
     handle_collision(*this);
 }
@@ -152,7 +144,7 @@ void Game_Playing::update()
 }
 
 // Renderer
-void Game_Playing::render(SDL_Renderer* renderer)
+void Game_Playing::render()
 {
     if (background)
     {
@@ -171,7 +163,7 @@ void Game_Playing::render(SDL_Renderer* renderer)
         button.render(renderer, -1, -1, false, -1);
     }
 
-    render_for_buttons(renderer, score, time_seconds);
+    render_for_buttons(score, time_seconds);
 
     return;
 }
@@ -205,18 +197,6 @@ void Game_Playing::clean()
     {
         SDL_DestroyTexture(background);
         background = nullptr;
-    }
-
-    if (font1)
-    {
-        TTF_CloseFont(font1);
-        font1 = nullptr;
-    }
-
-    if (font2)
-    {
-        TTF_CloseFont(font2);
-        font2 = nullptr;
     }
 
     buttons.clear();

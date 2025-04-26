@@ -24,10 +24,14 @@ void level_up_enemy(Game_Playing &game, TimeDelay &delay)
     if (game.enemy_speed > 2.5f)  return;
     if (delay.is_finished())
     {
+        // Buff enemy
         game.enemy_bigboss_speed += 0.01f;
         game.enemy_bigboss_hp += 5.f;
         game.enemy_speed += 0.05f;
         game.enemy_hp += 1.f;
+
+        // Add new enemy
+        game.enemies.push_back(new Enemy(game.music, game.enemy_texture, game.enemy_speed, game.enemy_hp, 800, -1, 170, 170, false));
 
         printf(">>> Level up enemy: hp=%.2f, speed=%.2f\n", game.enemy_hp, game.enemy_speed);
 

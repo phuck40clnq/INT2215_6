@@ -1,14 +1,14 @@
 #include "../include/button.h"
 
-Button::Button(int x, int y, int w, int h, const char* text)
-    : x(x), y(y), w(w), h(h), text(text), font(nullptr) {}
+Button::Button(Font* font, int x, int y, int w, int h, const char* text)
+    : font(font), x(x), y(y), w(w), h(h), text(text) {}
 
 bool Button::is_touch(int mouse_x, int mouse_y)
 {
     return mouse_x >= x && mouse_x <= x + w && mouse_y >= y && mouse_y <= y + h;
 }
 
-void Button::render(SDL_Renderer *renderer, int mouse_x, int mouse_y, bool change_color_touch, int pos)
+void Button::render(SDL_Renderer *renderer, int mouse_x, int mouse_y, bool change_color_touch, int pos, SDL_Color color)
 {
     SDL_Rect button_rect = {x, y, w, h};
     if (change_color_touch)     // Button change color
@@ -19,15 +19,14 @@ void Button::render(SDL_Renderer *renderer, int mouse_x, int mouse_y, bool chang
             SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);    // Red button
     }
     else
-        SDL_SetRenderDrawColor(renderer, 255, 255, 153, 255);    // Yellow
-        // SDL_SetRenderDrawColor(renderer, 245, 245, 220, 255);       // Light beige
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);    // Custom color
 
     SDL_RenderFillRect(renderer, &button_rect);
 
-    if (!font)  return;
+    if (!current_font)  return;
     // Draw into the rect
     SDL_Color text_color = {0, 0, 0, 255};  // Black
-    SDL_Surface* text_surface = TTF_RenderText_Solid(font, text, text_color);
+    SDL_Surface* text_surface = TTF_RenderText_Solid(current_font, text, text_color);
     if (!text_surface)
     {
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Can not create text_surface: %s", TTF_GetError());

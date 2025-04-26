@@ -1,7 +1,7 @@
 #include "../include/player.h"
 
 // Constructor
-Player::Player(Music* music, SDL_Texture *texture, int x, int y, int w, int h, int frames)
+Player::Player(Music* music, SDL_Texture* texture, int x, int y, int w, int h, int frames)
     // : Object(texture, x, y, w, h), frames(frames) {
     : music(music), texture(texture), x(x), y(y), w(w), h(h), frames(frames)
     {
@@ -102,7 +102,7 @@ void Player::update()
             {
                 int offset = (i - num_bullets / 2) * spacing;
                 int bullet_x = x + w / 2 + offset;
-                int bullet_y = y + h / 4;
+                int bullet_y = y + h / 2;
                 // Player::bullets.push_back(Bullet(x + w / 2, y + h / 4, bullet_speed, bullet_damage));
                 Player::bullets.push_back(Bullet(bullet_x, bullet_y, bullet_speed, bullet_damage));
                 SDL_Log("Bullet %i fired!", i);
@@ -147,7 +147,7 @@ void Player::update()
 
 
 // Renderer
-void Player::render(SDL_Renderer *renderer)
+void Player::render(SDL_Renderer* renderer)
 {
     // Object::render(renderer);
     SDL_Rect dst = {x, y, w, h};
@@ -156,7 +156,7 @@ void Player::render(SDL_Renderer *renderer)
     return;
 }
 
-    void Player::render_bullets(SDL_Renderer *renderer)
+    void Player::render_bullets(SDL_Renderer* renderer)
     {
         for (auto& bullet : bullets)
         {
