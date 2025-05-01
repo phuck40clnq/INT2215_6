@@ -135,7 +135,7 @@ int main()
 
          // Vẽ nền với viền trong suốt
         SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderDrawColor(render, 0, 0, 0, 180);  // Màu đen với alpha 180 (mờ)
+        SDL_SetRenderDrawColor(render, 0, 0, 0, 10);  // Màu đen với alpha 180 (mờ)
         SDL_RenderFillRect(render, &rect);
 
         // Vẽ viền với độ trong suốt (alpha)

@@ -1,7 +1,7 @@
 #ifndef LEVEL_UP_H
 #define LEVEL_UP_H
 
-#include "../include/Game_playing.h"
+#include "Game_playing.h"
 
 // Player
 void level_up_player(Game_Playing &game);

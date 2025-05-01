@@ -30,6 +30,7 @@ class Game
         Board* instruction,* pause;
         Music music;
         Font font;
+        Texture texture;
 
     public:
 
@@ -46,8 +47,14 @@ class Game
 
         // Game run
         void handle_event();
+        void handle_state(GAME_STATE state, SDL_Event& event);
+        void handle_overlay(OVERLAY overlay, SDL_Event& event);
+
         void update();
+        
         void render();
+        void render_state(GAME_STATE state);
+        void render_overlay(OVERLAY overlay);
 
         void start_frame();
         void end_frame();

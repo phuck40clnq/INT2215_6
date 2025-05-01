@@ -3,21 +3,23 @@
 
 #include <SDL2/SDL_image.h>
 #include "board.h"
+#include "texture.h"
 
 
 class Game_Menu
 {
     private:
-        Font* font;
-        SDL_Texture* texture;
         std::vector<Button> buttons;
-        Music* music;
+
         Board* instruction,* setting;
 
         SDL_Renderer* renderer;
+        Music* music;
+        Font* font;
+        Texture* texture;
 
     public:
-        Game_Menu(SDL_Renderer* renderer, Music* music, Font* font, Board* instruction, Board* setting);
+        Game_Menu(SDL_Renderer* renderer, Music* music, Font* font, Texture* texture, Board* instruction, Board* setting);
         ~Game_Menu() { clean(); }
 
         void init();

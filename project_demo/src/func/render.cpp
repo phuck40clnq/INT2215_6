@@ -1,4 +1,4 @@
-#include "render.h"
+#include "../include/render.h"
 
 void render_text(SDL_Renderer* renderer, const char* text, int x, int y, TTF_Font* font, int angle, SDL_Color color)
 {
@@ -33,17 +33,17 @@ void render_text(SDL_Renderer* renderer, const char* text, int x, int y, TTF_Fon
     SDL_FreeSurface(text_surface);
 }
 
-void render_hp(SDL_Renderer* renderer, float hp, float max_hp, int x, int y, int w, int h, bool change_color)
+void render_hp(SDL_Renderer* renderer, float hp, float max_hp, float x, float y, int w, int h, bool change_color)
 {
     int bar_width = 50;
     int bar_height = 5;
 
     float ratio = float(hp) / max_hp;
     int hp_width = int (ratio * bar_width + 0.5f);
-    int hp_bar_x = x + w / 2 - bar_width / 2;
-    int hp_bar_y = y + h - 5;
+    float hp_bar_x = x + w / 2 - bar_width / 2;
+    float hp_bar_y = y + h - 3;
 
-    SDL_Rect hp_bar = {hp_bar_x, hp_bar_y, hp_width, bar_height};
+    SDL_FRect hp_bar = {hp_bar_x, hp_bar_y, float(hp_width), float(bar_height)};
 
     if (change_color)
     {
@@ -58,7 +58,7 @@ void render_hp(SDL_Renderer* renderer, float hp, float max_hp, int x, int y, int
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green
 
     // Draw
-    SDL_RenderFillRect(renderer, &hp_bar);
+    SDL_RenderFillRectF(renderer, &hp_bar);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black border
-    SDL_RenderDrawRect(renderer, &hp_bar);
+    SDL_RenderDrawRectF(renderer, &hp_bar);
 }

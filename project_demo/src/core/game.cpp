@@ -2,7 +2,7 @@
 
 // ---Initialize---
 Game::Game()
-{ 
+{
     this->window = NULL;
     this->renderer = NULL;
     this->game = nullptr;
@@ -16,18 +16,6 @@ bool Game::init(const char* title, int width, int height)
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "SDL_Init failed: %s", SDL_GetError());
-        return false;
-    }
-
-    if (IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) == 0)
-    {
-        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "IMG_Init failed: %s", IMG_GetError());
-        return false;
-    }
-
-    if (!font.init())
-    {
-        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "TTF_Init failed: %s", TTF_GetError());
         return false;
     }
 
@@ -45,6 +33,13 @@ bool Game::init(const char* title, int width, int height)
         return false;
     }
 
+    texture = Texture(renderer);
+    if (!texture.init())
+    {
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "IMG_Init failed: %s", IMG_GetError());
+        return false;
+    }
+
     // ---Init audio---
     if (!music.init())
     {
@@ -52,32 +47,47 @@ bool Game::init(const char* title, int width, int height)
         return false;
     }
 
+    if (!font.init())
+    {
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "TTF_Init failed: %s", TTF_GetError());
+        return false;
+    }
+
+    // ---Load texture---
+    texture.loadtexture("background_menu", "../images/background_menu.jpg");
+    texture.loadtexture("background_playing", "../images/background_game.jpg");
+    texture.loadtexture("background_gameover", "../images/background_gameover.png");
+
     // ---Load music---
     music.loadmusic("background_menu", "../music/background/Exotics.mp3");
     music.loadmusic("background_playing", "../music/background/Interstellar.mp3");
     music.loadmusic("background_gameover", "../music/background/Jesu.mp3");
 
-    music.setvolume(50);
+    music.setvolume_music(20);
+    music.setvolume_sound(5);
 
     // ---Load font---
     font.loadfont("font1", "../font/font1.ttf", 30, { 0, 0, 0, 255 });
-    font.loadfont("font2", "../font/font2.ttf", 50, { 0, 0, 0, 255 });
-    font.loadfont("font3", "../font/font3.ttf", 50, { 0, 0, 0, 255 });
-
-    this->instruction = new Board(&music, &font, renderer, 40, 30, 720, 540);
+    font.loadfont("font2", "../font/font2.ttf", 30, { 0, 0, 0, 255 });
+    font.loadfont("font3", "../font/font3.ttf", 30, { 0, 0, 0, 255 });
+    
+    this->instruction = new Board(&music, &font, renderer, 80, 60, 640, 480);
     instruction->set_font("font1");
     instruction->set_text({
         "INSTRUCTION",
-        "1. Press 'ESC' to exit the game.",
-        "2. Press Arrow keys to move.",
-        "3. Press 'SPACE' to shoot.",
-        "4. Press 'P' to pause the game.",
-        "5. Press 'R' to restart the game.",
+        "1. Press Arrow keys to move.",
+        "2. Press 'SPACE' to shoot.",
+        "3. Press 'P' to pause the game.",
+        "4. Press 'R' to restart the game.",
+        "5. Press 'ESC' to exit.",
     });
     this->pause = new Board(&music, &font, renderer, 80, 60, 640, 480);
     pause->set_font("font1");
     pause->set_text({
         "PAUSE",
+        "1. Press 'P' to resume.",
+        "2. Press 'R' to restart the game.",
+        "3. Press 'ESC' to exit.",
     });
 
 
@@ -99,34 +109,44 @@ void Game::handle_event()
             return;
         }
 
-        if (get_state() == GAME_STATE::MENU)
+        handle_state(get_state(), event);
+        handle_overlay(get_overlay(), event);
+    }
+}
+
+void Game::handle_state(GAME_STATE state, SDL_Event& event)
+{
+    if (get_state() == GAME_STATE::MENU)
+    {
+        new_menu();
+        menu->handle_event(event);
+    }
+    else if (get_state() == GAME_STATE::PLAYING)
+    {
+        new_game();
+        game->handle_event(event);
+    }
+    else if (get_state() == GAME_STATE::GAME_OVER)
+    {
+        new_gameover();
+        gameover->handle_event(event);
+    }
+}
+
+void Game::handle_overlay(OVERLAY overlay, SDL_Event& event)
+{
+    if (get_overlay() == OVERLAY::INSTRUCTION)
+    {
+        if (instruction->is_active())
         {
-            new_menu();
-            menu->handle_event(event);
+            instruction->handle_event(event);
         }
-        else if (get_state() == GAME_STATE::PLAYING)
+    }
+    else if (get_overlay() == OVERLAY::PAUSE)
+    {
+        if (pause->is_active())
         {
-            new_game();
-            game->handle_event(event);
-        }
-        else if (get_state() == GAME_STATE::GAME_OVER)
-        {
-            new_gameover();
-            gameover->handle_event(event);
-        }
-        if (get_overlay() == OVERLAY::INSTRUCTION)
-        {
-            if (instruction->is_active())
-            {
-                instruction->handle_event(event);
-            }
-        }
-        if (get_overlay() == OVERLAY::PAUSE)
-        {
-            if (pause->is_active())
-            {
-                pause->handle_event(event);
-            }
+            pause->handle_event(event);
         }
     }
 }
@@ -144,41 +164,47 @@ void Game::render()
     SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
     SDL_RenderClear(renderer);
 
-    if (get_state() == GAME_STATE::MENU)
+    render_state(get_state());
+    render_overlay(get_overlay());
+
+    SDL_RenderPresent(renderer);
+}
+
+void Game::render_state(GAME_STATE state)
+{
+    if (state == GAME_STATE::MENU)
     {
         new_menu();
         menu->render();
     }
-    else if (get_state() == GAME_STATE::PLAYING)
+    else if (state == GAME_STATE::PLAYING)
     {
         new_game();
         game->render();
     }
-    else if (get_state() == GAME_STATE::GAME_OVER)
+    else if (state == GAME_STATE::GAME_OVER)
     {
         new_gameover();
         gameover->render();
     }
-    if (get_overlay() == OVERLAY::INSTRUCTION)
+}
+
+void Game::render_overlay(OVERLAY overlay)
+{
+    if (overlay == OVERLAY::INSTRUCTION)
     {
         if (instruction->is_active())
         {
             instruction->render(true);
         }
-        else
-            set_state(get_previous_state());
     }
-    if (get_overlay() == OVERLAY::PAUSE)
+    else if (overlay == OVERLAY::PAUSE)
     {
         if (pause->is_active())
         {
             pause->render(true);
         }
-        else
-            set_state(get_previous_state());
     }
-
-    SDL_RenderPresent(renderer);
 }
 
 // ---Clean screen for each case---
@@ -186,7 +212,7 @@ void Game::new_menu()
 {
     if (menu == nullptr)
     {
-        menu = new Game_Menu(renderer, &music, &font, instruction, pause);
+        menu = new Game_Menu(renderer, &music, &font, &texture, instruction, pause);
         music.playmusic("background_menu", true);
     }
     if (game)
@@ -206,7 +232,7 @@ void Game::new_game()
 
     if (game == nullptr)
     {
-        game = new Game_Playing(renderer, &music, &font, instruction, pause);
+        game = new Game_Playing(renderer, &music, &font, &texture, instruction, pause);
         music.playmusic("background_playing", true);
     }
     if (menu)
@@ -225,7 +251,7 @@ void Game::new_gameover()
 {
     if (gameover == nullptr)
     {
-        gameover = new Game_Gameover(renderer, &music, &font, instruction, pause);
+        gameover = new Game_Gameover(renderer, &music, &font, &texture, instruction, pause);
         music.playmusic("background_gameover", true);
     }
     if (menu)
@@ -265,10 +291,10 @@ void Game::clean()
 
     clean_data();
     
+    texture.clean();
     music.clean();
     font.clean();
 
-    IMG_Quit();
     SDL_Quit();
     return;
 }

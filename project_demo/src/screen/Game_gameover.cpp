@@ -1,15 +1,15 @@
 #include "../include/Game_gameover.h"
 #include "../include/Game_state.h"
+#include "../include/render.h"
 
 #include <cstring>
 
-#include "../func/render.h"
-
-Game_Gameover::Game_Gameover(SDL_Renderer* renderer, Music* music, Font* font, Board* instruction, Board* setting)
+Game_Gameover::Game_Gameover(SDL_Renderer* renderer, Music* music, Font* font, Texture* texture, Board* instruction, Board* setting)
 { 
     this->renderer = renderer;
     this->music = music;
     this->font = font;
+    this->texture = texture;
     this->instruction = instruction;
     this->setting = setting;
     init(); 
@@ -18,17 +18,10 @@ Game_Gameover::Game_Gameover(SDL_Renderer* renderer, Music* music, Font* font, B
 
 void Game_Gameover::init()
 {
+    // Load Texture
+
     // Load music
     music->loadsound("click_button", "../music/sound_effect/click.wav");
-
-    // Load background
-    texture = IMG_LoadTexture(renderer, "../images/background_gameover.png");
-    if (texture == NULL)
-    {
-        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "IMG_LoadTexture background failed: %s", IMG_GetError());
-        return;
-    }
-
     return;
 }
 
@@ -78,15 +71,12 @@ void Game_Gameover::handle_button_click(Button& button)
 
 void Game_Gameover::render()
 {
-    // SDL_Rect tmp = {0, 0, 800, 600};
+    // SDL_FRect tmp = {0, 0, 800, 600};
     // SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
     // SDL_RenderFillRect(renderer, &tmp);
 
-    if (texture) 
-    {
-        SDL_Rect background_gameover = {0, 0, 800, 600};
-        SDL_RenderCopy(renderer, texture, nullptr, &background_gameover);
-    }
+    SDL_FRect background_gameover = {0, 0, 800, 600};
+    texture->render("background_gameover", background_gameover, {255, 255, 255, 255}, false, false);
 
     int mouse_x, mouse_y;
     SDL_GetMouseState(&mouse_x, &mouse_y);
@@ -99,11 +89,5 @@ void Game_Gameover::render()
 
 void Game_Gameover::clean()
 {
-    if (texture)
-    {
-        SDL_DestroyTexture(texture);
-        texture = nullptr;
-    }
-
     buttons.clear();
 }

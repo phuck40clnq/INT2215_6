@@ -18,6 +18,8 @@ class Music
         void loadsound(const char* name, const char* path);
         void playsound(const char* name, int channel = -1, bool loop = false);
         void setvolume(int volume = 128, const char* name = nullptr);
+        void setvolume_music(int volume = 128);
+        void setvolume_sound(int volume = 128);
 
         void clean();
 

@@ -1,15 +1,17 @@
 #include "../include/Game_menu.h"
 #include "../include/Game_state.h"
+#include "../include/render.h"
 
 #include <cstring>
 
-#include "../func/render.h"
 
-Game_Menu::Game_Menu(SDL_Renderer* renderer, Music* music, Font* font, Board* instruction, Board* setting)
+
+Game_Menu::Game_Menu(SDL_Renderer* renderer, Music* music, Font* font, Texture* texture, Board* instruction, Board* setting)
 { 
     this->renderer = renderer;
     this->music = music;
     this->font = font;
+    this->texture = texture;
     this->instruction = instruction;
     this->setting = setting;
     init(); 
@@ -18,16 +20,10 @@ Game_Menu::Game_Menu(SDL_Renderer* renderer, Music* music, Font* font, Board* in
 
 void Game_Menu::init()
 {
+    // Load Texture
+
     // Load music
     music->loadsound("click_button", "../music/sound_effect/soft_click.wav");
-
-    // Load background
-    texture = IMG_LoadTexture(renderer, "../images/background_menu.jpg");
-    if (texture == NULL)
-    {
-        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "IMG_LoadTexture background failed: %s", IMG_GetError());
-        return;
-    }
 
     return;
 }
@@ -81,12 +77,8 @@ void Game_Menu::render()
     // SDL_Rect tmp = {0, 0, 800, 600};
     // SDL_SetRenderDrawColor(renderer, 245, 245, 220, 255);   // Light beige
     // SDL_RenderFillRect(renderer, &tmp);
-    
-    if (texture) 
-    {
-        SDL_Rect background_menu = {0, 0, 800, 600};
-        SDL_RenderCopy(renderer, texture, nullptr, &background_menu);
-    }
+    SDL_FRect background_menu = {0, 0, 800, 600};
+    texture->render("background_menu", background_menu, {255, 255, 255, 255}, false, false);
 
     render_text(renderer, "WELCOME", 200, 130, font->get_font("font1"));
 
@@ -101,11 +93,5 @@ void Game_Menu::render()
 
 void Game_Menu::clean()
 {
-    if (texture)
-    {
-        SDL_DestroyTexture(texture);
-        texture = nullptr;
-    }
-    
     buttons.clear();
 }

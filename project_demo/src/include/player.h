@@ -5,26 +5,31 @@
 #include "bullet.h"
 // #include "GameObject.h"
 #include "music.h"
+#include "texture.h"
 #include "TimeDelay.h"
 #include <SDL2/SDL.h>
 #include <vector>
 
 class Player// : public Object
 {
-    int x, y, w, h; float fx, fy;
-    SDL_Texture *texture;
+    int w, h; float fx, fy;
     int frames;
     int max_frames;
     std::vector<Bullet> bullets;
     SDL_Rect src;
 
     bool move_sound_playing = false;
+
     Music* music;
+    Texture* texture;
+    const char* texture_player_name; 
 
     // Buff
-    float speed, bullet_speed, bullet_damage;
-    float normal_speed, normal_bullet_speed, normal_bullet_damage;
-    float buff_speed, buff_bullet_speed, buff_bullet_damage;
+    float player_speed, bullet_speed, bullet_damage;
+    float buff_player_speed, buff_bullet_speed, buff_bullet_damage;
+    float base_player_speed, base_bullet_speed, base_bullet_damage;
+    float increase_player_speed=0, increase_bullet_speed=0, increase_bullet_damage=0;
+
     TimeDelay buff_timer;
 
     // Animations
@@ -34,6 +39,8 @@ class Player// : public Object
     Uint32 last_combo_time = 0;
     Uint32 last_combo_reset_time = 0;
 
+    // Change color
+    SDL_Color player_color = {255, 255, 255, 255};
 
     public:
         // Player level
@@ -47,15 +54,29 @@ class Player// : public Object
         void buff_player(int sec, Uint32 current_time);
         void combo();
 
-        void update_data();
-        void update_data_bullet();
+        // Increase base
+        void increase_player_speed_buff(float speed) { increase_player_speed += speed; }
+        void increase_bullet_speed_buff(float speed) { increase_bullet_speed += speed; }
+        void increase_bullet_damage_buff(float damage) { increase_bullet_damage += damage; }
 
+        // In buff
+        void update_data_buff_combo();
+
+        // End buff
+        void reset_data();
+
+        // Normal
+        void update_data();
+
+        // Change color
+        void set_color(SDL_Color color) { player_color = color; }
+        SDL_Color get_color() { return player_color; }
 
         // Constructor
-        Player(Music* music, SDL_Texture *texture, int x=360, int y=270, int w=80, int h=80, int frames=1);
+        Player(Music* music, Texture *texture, const char* texture_name, float x=360.f, float y=270.f, int w=80, int h=80, int frames=1);
         ~Player() { clean(); }
 
-        SDL_Rect get_rect() { return {x, y, w, h}; }
+        SDL_FRect get_rect() { return {fx, fy, float(w), float(h)}; }
         std::vector<Bullet> &get_bullets() { return bullets; }
 
         // Running
@@ -71,7 +92,6 @@ class Player// : public Object
             void update_bullets();
         void render(SDL_Renderer *renderer); //override;
             void render_bullets(SDL_Renderer *renderer);
-
         void clean();
 };
 

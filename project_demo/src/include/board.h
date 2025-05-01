@@ -6,9 +6,7 @@
 
 #include "button.h"
 #include "music.h"
-
-
-#include "../func/render.h"
+#include "render.h"
 
 class Board
 {
@@ -23,7 +21,7 @@ class Board
 
     Music* music;
     Font* font;
-    TTF_Font* current_font;
+    const char* name_font;
 
     public:
         Board(Music* music, Font* font, SDL_Renderer* renderer, int x, int y, int w, int h);

@@ -8,20 +8,19 @@
 
 class Bullet
 {
-    int x, y;
+    float x, y;
     float s;
     public:
         bool is_active;
         float damage;
         // Constructor and Destructor
-        Bullet(int x, int y, float s = 5.f, float damage = 2.f);
+        Bullet(float x, float y, float s = 5.f, float damage = 2.f);
         ~Bullet();
 
-        SDL_Rect get_rect() { return {x, y, width_bullet, height_bullet}; }
+        SDL_FRect get_rect() { return {x, y, float(width_bullet), float(height_bullet)}; }
 
         // Get bullet
         bool active() { return is_active; };
-        void erase();
         void update();
         void render(SDL_Renderer* renderer);
 };

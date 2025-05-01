@@ -3,7 +3,7 @@
 # File name
 SOURCES="
     game/main.cpp \
-    core/game.cpp core/player.cpp core/GameObject.cpp core/enemy.cpp core/bullet.cpp core/music.cpp core/font.cpp\
+    core/game.cpp core/player.cpp core/GameObject.cpp core/enemy.cpp core/bullet.cpp core/texture.cpp core/music.cpp core/font.cpp\
     func/handle_collision.cpp func/render.cpp func/level_up.cpp \
     screen/button.cpp screen/Game_gameover.cpp screen/Game_menu.cpp screen/Game_playing.cpp screen/Game_state.cpp screen/board.cpp \
 
@@ -26,4 +26,6 @@ if [ $? -eq 0 ]; then
 
 else
     echo "Error!"
+    echo "Compiler errors:"
+    cat build.log
 fi

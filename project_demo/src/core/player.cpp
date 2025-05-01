@@ -1,15 +1,13 @@
 #include "../include/player.h"
 
 // Constructor
-Player::Player(Music* music, SDL_Texture* texture, int x, int y, int w, int h, int frames)
+Player::Player(Music* music, Texture* texture, const char* texture_name, float x, float y, int w, int h, int frames)
     // : Object(texture, x, y, w, h), frames(frames) {
-    : music(music), texture(texture), x(x), y(y), w(w), h(h), frames(frames)
+    : music(music), texture(texture), texture_player_name(texture_name), fx(x), fy(y), w(w), h(h), frames(frames)
     {
         // Set default values
         update_data();
-
-        this->fx = x;
-        this->fy = y;
+        reset_data();
     }
 
 // Handle event
@@ -46,14 +44,13 @@ void Player::update()
     if (buff_timer.is_finished()) 
     {
         // Reset
-        speed = normal_speed;
-        bullet_speed = normal_bullet_speed;
-        bullet_damage = normal_bullet_damage;
+        reset_data();
 
         buff_timer.reset();
         SDL_Log(">>> BUFF OFF");
 
-        SDL_SetTextureColorMod(texture, 255, 255, 255);
+        // Set color to normal
+        player_color = {255, 255, 255, 255}; // White
     }
     fire_bullet();
     move();
@@ -62,47 +59,45 @@ void Player::update()
     return;
 }
 
-    void Player::update_bullets()
-    {
-        auto it = bullets.begin();
-        for (auto& bullet : bullets)
-        {
-            bullet.update();
-            if (bullet.active())
-            {
-                *it = bullet;
-                ++it;
-            }
-        }
-    }
-
     // void Player::update_bullets()
     // {
     //     auto it = bullets.begin();
-    //     while (it != bullets.end())
+    //     for (auto& bullet : bullets)
     //     {
-    //         it->update();
-    //         if (!it->active())
-    //             it = bullets.erase(it);
-    //         else
+    //         bullet.update();
+    //         if (bullet.active())
+    //         {
+    //             *it = bullet;
     //             ++it;
+    //         }
     //     }
     // }
+
+    void Player::update_bullets()
+    {
+        auto it = bullets.begin();
+        while (it != bullets.end())
+        {
+            it->update();
+            if (!it->active())
+                it = bullets.erase(it);
+            else
+                ++it;
+        }
+    }
 
     void Player::fire_bullet()
     {
         if (fired)
-        {
-            update_data_bullet();
-            
-            int spacing = 10;
-            int num_bullets = player_level / 10 + 1;
+        {            
+            int spacing = 20;
+            int num_bullets = player_level / 3 + 1;
             if (num_bullets > 5) num_bullets = 5;
             for (int i = 0; i < num_bullets; i++)
             {
                 int offset = (i - num_bullets / 2) * spacing;
-                int bullet_x = x + w / 2 + offset;
-                int bullet_y = y + h / 2;
+                float bullet_x = fx + w + offset;
+                float bullet_y = fy + h / 2;
                 // Player::bullets.push_back(Bullet(x + w / 2, y + h / 4, bullet_speed, bullet_damage));
                 Player::bullets.push_back(Bullet(bullet_x, bullet_y, bullet_speed, bullet_damage));
                 SDL_Log("Bullet %i fired!", i);
@@ -118,14 +113,10 @@ void Player::update()
     {
         bool moved = false;
         
-        if (keys[SDL_SCANCODE_UP])      { if (fy < 80) fy = 85; fy -= speed; moved = true; }
-        if (keys[SDL_SCANCODE_DOWN])    { if (fy + h > 600) fy = 600 - h - 5; fy += speed; moved = true; }
-        if (keys[SDL_SCANCODE_LEFT])    { if (fx < 0) fx = 5; fx -= speed; moved = true; }
-        if (keys[SDL_SCANCODE_RIGHT])   { if (fx + w > 800) fx = 800 - w - 5; fx += speed; moved = true; }
-
-        // Update position
-        x = int (fx);
-        y = int (fy);
+        if (keys[SDL_SCANCODE_UP])      { fy -= player_speed; if (fy < 80) fy = 85; moved = true; }
+        if (keys[SDL_SCANCODE_DOWN])    { fy += player_speed; if (fy + h > 600) fy = 600 - h - 5; moved = true; }
+        if (keys[SDL_SCANCODE_LEFT])    { fx -= player_speed; if (fx < 0) fx = 5; moved = true; }
+        if (keys[SDL_SCANCODE_RIGHT])   { fx += player_speed; if (fx + w > 800) fx = 800 - w - 5; moved = true; }
 
         if (moved) 
         {
@@ -146,12 +137,13 @@ void Player::update()
     }
 
 
-// Renderer
+// ---Renderer---
 void Player::render(SDL_Renderer* renderer)
 {
     // Object::render(renderer);
-    SDL_Rect dst = {x, y, w, h};
-    SDL_RenderCopy(renderer, texture, NULL, &dst);
+    SDL_Color color = player_color;
+    SDL_FRect dst = {fx, fy, float(w), float(h)};
+    texture->render(texture_player_name, dst, color);
     render_bullets(renderer);
     return;
 }
@@ -170,7 +162,7 @@ void Player::clean()
 }
 
 
-// Features
+// ---Features---
 void Player::combo()
 {
     Uint32 current_time = SDL_GetTicks();
@@ -206,44 +198,50 @@ void Player::combo()
 
 void Player::buff_player(int sec, Uint32 current_time)
 {
-    update_data();
+    update_data_buff_combo();
 
     // Buff 3 sec
     buff_timer.start(sec * 1000);
     SDL_Log("-------->>> BUFF - COMBO KILL: %d", combo_kill_count);
 
     // Buff speed
-    speed += buff_speed;
+    player_speed += buff_player_speed;
+    if (player_speed > 5.f) player_speed = 5.f;
 
     // Buff bullet speed and damage
     bullet_speed += buff_bullet_speed;
+    if (bullet_speed > 10.f) bullet_speed = 10.f;
     bullet_damage += buff_bullet_damage;
+    if (bullet_damage > 10.f) bullet_damage = 10.f;
 
     last_combo_reset_time = current_time;
 
-    // Others
-    SDL_SetTextureColorMod(texture, 255, 255, 0);
+    // Change color
+    player_color = {255, 255, 0, 255}; // Yellow
 }
 
 // Update data
-void Player::update_data()
+void Player::update_data_buff_combo()
 {
-    this->normal_speed = 2.f + player_level * 0.05f;
-    this->speed = 2.f + player_level * 0.05f;
-    this->buff_speed = speed * player_level * 0.1f;
-
-    update_data_bullet();
+    this->buff_player_speed = base_player_speed * player_level * 0.05f;
+    this->buff_bullet_speed = base_bullet_speed * player_level * 0.05f;
+    this->buff_bullet_damage = base_bullet_damage * player_level * 0.05f;
 }
 
-// Update data bullet
-void Player::update_data_bullet()
+void Player::reset_data()
 {
-    this->normal_bullet_speed = 5.f + player_level * 0.05f;
-    this->normal_bullet_damage = 2.f + player_level * 0.05f;
+    this->player_speed = base_player_speed;
+    this->bullet_speed = base_bullet_speed;
+    this->bullet_damage = base_bullet_damage;
+}
 
-    this->bullet_speed = 5.f + player_level * 0.05f;
-    this->bullet_damage = 2.f + player_level * 0.05f;
+void Player::update_data()
+{
+    this->base_player_speed = 2.f + player_level * 0.05f + increase_player_speed;
+    // if (base_player_speed > 5.f) base_player_speed = 5.f;
 
-    this->buff_bullet_speed = bullet_speed * player_level * 0.1f;
-    this->buff_bullet_damage = bullet_damage * player_level * 0.1f;
+    this->base_bullet_speed = 5.f + player_level * 0.05f + increase_bullet_speed;
+    // if (base_bullet_speed > 10.f) base_bullet_speed = 10.f;
+
+    this->base_bullet_damage = 2.f + player_level * 0.05f + increase_bullet_damage;
 }

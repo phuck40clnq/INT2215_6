@@ -1,5 +1,6 @@
 #include "../include/music.h"
 
+// ---Init---
 bool Music::init()
 {
     // Init audio
@@ -15,6 +16,7 @@ bool Music::init()
     return true;
 }
 
+// ---Load music---
 void Music::loadmusic(const char* name, const char* path)
 {
     Mix_Music *music = Mix_LoadMUS(path);
@@ -39,6 +41,7 @@ void Music::loadsound(const char* name, const char* path)
     return;
 }
 
+// ---Play music---
 void Music::playmusic(const char* name, bool loop)
 {
     if (music_tracks.find(name) == music_tracks.end())
@@ -67,6 +70,7 @@ void Music::playsound(const char* name, int channel, bool loop)
     else        Mix_PlayChannel(channel, music_sounds[name], 0);
 }
 
+// ---Set volume---
 void Music::setvolume(int volume, const char* name) 
 {
     if (name)
@@ -87,6 +91,23 @@ void Music::setvolume(int volume, const char* name)
     }
 }
 
+void Music::setvolume_music(int volume)
+{
+    for (auto& music : music_tracks)
+    {
+        Mix_VolumeMusic(volume);
+    }
+}
+
+void Music::setvolume_sound(int volume)
+{
+    for (auto& sound : music_sounds)
+    {
+        Mix_VolumeChunk(sound.second, volume);
+    }
+}
+
+// ---Clean---
 void Music::clean()
 {
     for (auto& music : music_tracks)

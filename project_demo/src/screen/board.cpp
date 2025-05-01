@@ -15,7 +15,7 @@ Board::Board(Music* music, Font* font, SDL_Renderer* renderer, int x, int y, int
 
 void Board::set_font(const char* name)
 {
-    this->current_font = font->get_font(name);
+    name_font = name;
     close_button.set_font(name);
 }
 
@@ -31,17 +31,17 @@ void Board::render(bool draw_transparent)
 
     if (draw_transparent)   this->draw_transparent();
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black
+    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255); // Black
     SDL_RenderFillRect(renderer, &rect);
 
 
-    if (!current_font || lines.empty()) return;
-    int line_height = TTF_FontHeight(current_font);
+    if (!font->get_font(name_font) || lines.empty()) return;
+    int line_height = TTF_FontHeight(font->get_font(name_font));
     int line_spacing = text_rect.y;
 
     for (auto& line : lines) 
     {
-        render_text(renderer, line, text_rect.x, line_spacing, current_font, 0, text_color);
+        render_text(renderer, line, text_rect.x, line_spacing, font->get_font(name_font), 0, text_color);
         line_spacing += line_height + 5;
     }
 
@@ -54,10 +54,11 @@ void Board::render(bool draw_transparent)
 void Board::draw_transparent()
 {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 120);
     SDL_RenderFillRect(renderer, nullptr);
 
     // Set render again
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 }
 

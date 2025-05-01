@@ -1,4 +1,4 @@
-#include "level_up.h"
+#include "../include/level_up.h"
 
 void level_up_player(Game_Playing &game)
 {
@@ -7,21 +7,17 @@ void level_up_player(Game_Playing &game)
     // Set exp again
     game.player->player_exp -= game.player->exp_next_level;
     game.player->player_level++;
-    game.player->exp_next_level += 5;
+    game.player->exp_next_level += 9;
     game.player->update_data();
 
-    // Stared
-    if (game.player->next_upgrade < game.player->player_level)  return;
-    game.player->next_upgrade += 3;
-    SDL_Log(">>> Player level up: %d", game.player->player_level);
-    // stared()
+    SDL_Log(">>> Player level up! Level: %d", game.player->player_level);
 
     return;
 }
 
 void level_up_enemy(Game_Playing &game, TimeDelay &delay)
 {
-    if (game.enemy_speed > 2.5f)  return;
+    if (game.current_enemy > max_enemies)  return;
     if (delay.is_finished())
     {
         // Buff enemy
@@ -31,9 +27,11 @@ void level_up_enemy(Game_Playing &game, TimeDelay &delay)
         game.enemy_hp += 1.f;
 
         // Add new enemy
-        game.enemies.push_back(new Enemy(game.music, game.enemy_texture, game.enemy_speed, game.enemy_hp, 800, -1, 170, 170, false));
+        game.enemies.push_back(new Enemy(game.music, game.texture, "texture_enemy", game.enemy_speed, game.enemy_hp, 800, -1, 42, 42, false));
+        game.current_enemy++;
 
-        printf(">>> Level up enemy: hp=%.2f, speed=%.2f\n", game.enemy_hp, game.enemy_speed);
+        SDL_Log("Enemy level up! Speed: %.2f, HP: %.2f", game.enemy_speed, game.enemy_hp);
+        SDL_Log(">>> Enemy spawned! Current enemies: %d", game.current_enemy);
 
         delay.start(12000);
     }
@@ -75,7 +73,7 @@ void bossed(Game_Playing &game)
 
 void big_boss(Game_Playing &game)
 {
-    game.enemies.push_back(new Enemy(game.music, game.enemy_texture, game.enemy_bigboss_speed, game.enemy_bigboss_hp, 800, -1, 170, 170, true));
+    game.enemies.push_back(new Enemy(game.music, game.texture, "texture_enemy", game.enemy_bigboss_speed, game.enemy_bigboss_hp, 800, -1, 170, 170, true));
 }
 
 void update_feature_level(Game_Playing &game)

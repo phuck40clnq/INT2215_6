@@ -45,6 +45,7 @@ void Game_setting::render(bool draw_transparent)
         button.render(renderer, mouse_x, mouse_y, false);
 }
 
+// ---Handle event---
 void Game_setting::handle_event(SDL_Event& event)
 {
     if (!board->is_active()) return;
@@ -59,14 +60,15 @@ void Game_setting::handle_event(SDL_Event& event)
         {
             if (!button.is_touch(x, y)) continue;
             music->playsound("click_button", -1, false);
-            if (strcmp(button.get_text(), "Play") == 0) set_state(PLAYING);
-            if (strcmp(button.get_text(), "Instruction") == 0) set_state(INSTRUCTION);
-            if (strcmp(button.get_text(), "Setting") == 0) set_state(SETTING);
+            if (strcmp(button.get_text(), "Play") == 0) set_state(GAME_STATE::PLAYING);
+            if (strcmp(button.get_text(), "Instruction") == 0) set_overlay(OVERLAY::INSTRUCTION);
+            if (strcmp(button.get_text(), "Setting") == 0) set_overlay(OVERLAY::PAUSE);
             if (strcmp(button.get_text(), "Exit") == 0) set_running(false);
         }
     }
 }
 
+// ---Clean---
 void Game_setting::clean()
 {
     if (board)
@@ -77,5 +79,4 @@ void Game_setting::clean()
     }
 
     buttons.clear();
-
 }

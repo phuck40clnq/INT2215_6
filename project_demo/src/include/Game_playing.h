@@ -4,11 +4,13 @@
 #include "board.h"
 #include "button.h"
 #include "enemy.h"
-#include "player.h"
 #include "Game_state.h"
+#include "item.h"
+#include "player.h"
+#include "texture.h"
 
 // Max number of enemies
-#define max_enemies 20
+#define max_enemies 12
 #define ENEMY 6
 
 class Game_Playing
@@ -37,12 +39,29 @@ class Game_Playing
         TimeDelay time_delay_enemy;
         Player* player; SDL_Texture* player_texture;
         std::vector<Enemy*> enemies; SDL_Texture* enemy_texture; int current_enemy = ENEMY;
+        std::vector<Enemy*> enemies_to_delete;  std::vector<Enemy*> enemies_to_add;
+
+        int count_boss_defeated = 0;
+
+        void update_num_enemy()
+        {
+             // Delete enemies
+            for (auto& delete_enemy : enemies_to_delete)   delete delete_enemy;
+            enemies_to_delete.clear();
+
+            // Add enemies
+            for (auto& add_enemy : enemies_to_add)  enemies.push_back(add_enemy);
+            enemies_to_add.clear();
+        }
+
+        std::vector<Item*> items;
 
         SDL_Renderer* renderer;
         Music* music;
         Font* font;
+        Texture* texture;
 
-        Game_Playing(SDL_Renderer* renderer, Music* music, Font* font, Board* instruction, Board* setting);
+        Game_Playing(SDL_Renderer* renderer, Music* music, Font* font, Texture* texture, Board* instruction, Board* setting);
         ~Game_Playing() { clean(); }
 
         void create_buttons();
