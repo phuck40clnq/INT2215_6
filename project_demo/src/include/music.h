@@ -21,6 +21,8 @@ class Music
         void setvolume_music(int volume = 128);
         void setvolume_sound(int volume = 128);
 
+        void stop_all();
+
         void clean();
 
         Music() {}

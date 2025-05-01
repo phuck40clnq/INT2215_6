@@ -1,7 +1,4 @@
 #include "../include/Game_gameover.h"
-#include "../include/Game_state.h"
-#include "../include/render.h"
-
 #include <cstring>
 
 Game_Gameover::Game_Gameover(SDL_Renderer* renderer, Music* music, Font* font, Texture* texture, Board* instruction, Board* setting)
@@ -19,6 +16,7 @@ Game_Gameover::Game_Gameover(SDL_Renderer* renderer, Music* music, Font* font, T
 void Game_Gameover::init()
 {
     // Load Texture
+    texture->loadtexture("texture_pause", "../images/setting_button.png");
 
     // Load music
     music->loadsound("click_button", "../music/sound_effect/click.wav");
@@ -36,8 +34,32 @@ void Game_Gameover::create_buttons()
         button.set_font("font1");
 }
 
+// ---Handle event---
 void Game_Gameover::handle_event(SDL_Event& event)
 {
+    handle_click(event);
+}
+
+void Game_Gameover::handle_button_click(Button& button)
+{
+    if (strcmp(button.get_text(), "Play") == 0) set_state(GAME_STATE::PLAYING);
+    else if (strcmp(button.get_text(), "Instruction") == 0)
+    {
+        set_overlay(OVERLAY::INSTRUCTION);
+        instruction->set_active(true);
+    }
+    else if (strcmp(button.get_text(), "Setting") == 0)
+    {
+        set_overlay(OVERLAY::PAUSE);
+        setting->set_active(true);
+    }
+    else if (strcmp(button.get_text(), "Exit") == 0) set_running(false);
+}
+
+void Game_Gameover::handle_click(SDL_Event& event)
+{
+    handle_overlay(event);
+
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
     {
         int x, y;
@@ -49,26 +71,61 @@ void Game_Gameover::handle_event(SDL_Event& event)
             music->playsound("click_button", -1, false);
             handle_button_click(button);
         }
+
+        SDL_FRect pause_rect = {760, 0, 40, 40};
+        if (texture->is_touch(x, y, pause_rect))
+        {
+            music->playsound("click_button", -1, false);
+            set_overlay(OVERLAY::PAUSE);
+            setting->set_active(true);
+        }
     }
 }
 
-void Game_Gameover::handle_button_click(Button& button)
+// ---Overlay---
+void Game_Gameover::handle_overlay(SDL_Event& event)
 {
-    if (strcmp(button.get_text(), "Menu") == 0) set_state(GAME_STATE::MENU);
-    else if (strcmp(button.get_text(), "Retry") == 0) set_state(GAME_STATE::PLAYING);
-    else if (strcmp(button.get_text(), "Instruction") == 0)
+    // Check if overlay is active
+    if (!setting->is_active() && get_overlay() == OVERLAY::PAUSE)
     {
-        set_overlay(OVERLAY::INSTRUCTION);
-        instruction->set_active(true);
+        setting->set_active(false);
+        pop_overlay();
     }
-    else if (strcmp(button.get_text(), "Setting") == 0)
+    if (!instruction->is_active() && get_overlay() == OVERLAY::INSTRUCTION)
     {
-        set_state(GAME_STATE::SETTING);
-        setting->set_active(true);
+        instruction->set_active(false);
+        pop_overlay();
     }
-    else if (strcmp(button.get_text(), "Exit") == 0) set_running(false);
+
+    // Handle key events for overlay
+    if (event.type == SDL_KEYDOWN)
+    {
+        if (event.key.keysym.sym == SDLK_p)
+        {
+            toggle_overlay(OVERLAY::PAUSE, setting); // Toggle PAUSE
+        }
+        else if (event.key.keysym.sym == SDLK_i)
+        {
+            toggle_overlay(OVERLAY::INSTRUCTION, instruction); // Toggle INSTRUCTION
+        }
+    }
 }
 
+void Game_Gameover::toggle_overlay(OVERLAY overlay, Board* board)
+{
+    if (get_overlay() == overlay)
+    {
+        pop_overlay();
+        board->set_active(false);
+    }
+    else
+    {
+        set_overlay(overlay);
+        board->set_active(true);
+    }
+}
+
+// ---Render---
 void Game_Gameover::render()
 {
     // SDL_FRect tmp = {0, 0, 800, 600};
@@ -76,7 +133,10 @@ void Game_Gameover::render()
     // SDL_RenderFillRect(renderer, &tmp);
 
     SDL_FRect background_gameover = {0, 0, 800, 600};
+    SDL_FRect pause_rect = { 760, 0, 40, 40 };
+
     texture->render("background_gameover", background_gameover, {255, 255, 255, 255}, false, false);
+    texture->render("texture_pause", pause_rect, { 255, 255, 255, 128 }, true, true);
 
     int mouse_x, mouse_y;
     SDL_GetMouseState(&mouse_x, &mouse_y);

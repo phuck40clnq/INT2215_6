@@ -98,14 +98,94 @@ void Game_Playing::init()
 
 void Game_Playing::handle_event(SDL_Event& event)
 {
+    handle_click(event);
+    if (get_overlay() == OVERLAY::PAUSE || get_overlay() == OVERLAY::INSTRUCTION)    return;
+
     player->handle_event(event);
     for (auto& enemy : enemies)
         enemy->handle_event(event);
 }
 
+void Game_Playing::handle_click(SDL_Event& event)
+{
+    
+    handle_overlay(event);
+
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+    {
+        int x, y;
+        SDL_GetMouseState(&x, &y);
+
+        for (auto& button : buttons)
+        {
+            if (!button.is_touch(x, y)) continue;
+            music->playsound("click_button", -1, false);
+            handle_button_click(button);
+        }
+
+        SDL_FRect pause_rect = {760, 0, 40, 40};
+        if (texture->is_touch(x, y, pause_rect))
+        {
+            music->playsound("click_button", -1, false);
+            set_overlay(OVERLAY::PAUSE);
+            setting->set_active(true);
+        }
+    }
+}
+
+void Game_Playing::handle_button_click(Button& button)
+{
+    return;
+}
+
+// ---Overlay---
+void Game_Playing::handle_overlay(SDL_Event& event)
+{
+    // Check if overlay is active
+    if (!setting->is_active() && get_overlay() == OVERLAY::PAUSE)
+    {
+        setting->set_active(false);
+        pop_overlay();
+    }
+    if (!instruction->is_active() && get_overlay() == OVERLAY::INSTRUCTION)
+    {
+        instruction->set_active(false);
+        pop_overlay();
+    }
+
+    // Handle key events for overlay
+    if (event.type == SDL_KEYDOWN)
+    {
+        if (event.key.keysym.sym == SDLK_p)
+        {
+            toggle_overlay(OVERLAY::PAUSE, setting); // Toggle PAUSE
+        }
+        else if (event.key.keysym.sym == SDLK_i)
+        {
+            toggle_overlay(OVERLAY::INSTRUCTION, instruction); // Toggle INSTRUCTION
+        }
+    }
+}
+
+void Game_Playing::toggle_overlay(OVERLAY overlay, Board* board)
+{
+    if (get_overlay() == overlay)
+    {
+        pop_overlay();
+        board->set_active(false);
+    }
+    else
+    {
+        set_overlay(overlay);
+        board->set_active(true);
+    }
+}
+
 // Update game
 void Game_Playing::update()
 {
+    if (get_overlay() == OVERLAY::PAUSE || get_overlay() == OVERLAY::INSTRUCTION)    return;
+
     if (player) player->update();
     for (auto& enemy : enemies)
     {
@@ -133,10 +213,10 @@ void Game_Playing::update()
 void Game_Playing::render()
 {
     SDL_FRect background_playing_rect = {0, 0, 800, 600};
-    SDL_FRect pause_rect = { 740, 60, 60, 60 };
+    SDL_FRect pause_rect = { 760, 0, 40, 40 };
 
     texture->render("background_playing", background_playing_rect, { 255, 255, 255, 255 }, false, false);
-    texture->render("texture_pause", pause_rect, { 255, 255, 255, 255 }, false, false);
+    texture->render("texture_pause", pause_rect, { 255, 255, 255, 128 }, true, true);
 
     player->render(renderer);
     for (auto& enemy : enemies) enemy->render(renderer);

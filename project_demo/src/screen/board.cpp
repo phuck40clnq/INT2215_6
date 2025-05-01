@@ -25,13 +25,13 @@ void Board::set_text(std::vector<const char*> texts, SDL_Color text_color)
     this->lines = texts;
 }
 
-void Board::render(bool draw_transparent)
+void Board::render(bool draw_transparent, SDL_Color color)
 {
     if (!active) return;
 
     if (draw_transparent)   this->draw_transparent();
 
-    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255); // Black
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
     SDL_RenderFillRect(renderer, &rect);
 
 
@@ -66,11 +66,11 @@ void Board::handle_event(SDL_Event& event)
 {
     if (!active) return;
 
-    if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) 
-    {
-        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Escape key pressed");
-        active = false;
-    }
+    // if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) 
+    // {
+    //     SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Escape key pressed");
+    //     active = false;
+    // }
 
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) 
     {

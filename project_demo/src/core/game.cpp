@@ -8,7 +8,6 @@ Game::Game()
     this->game = nullptr;
     this->menu = nullptr;
     this->gameover = nullptr;
-    // this->pause = nullptr;
 }
 
 bool Game::init(const char* title, int width, int height)
@@ -81,9 +80,9 @@ bool Game::init(const char* title, int width, int height)
         "4. Press 'R' to restart the game.",
         "5. Press 'ESC' to exit.",
     });
-    this->pause = new Board(&music, &font, renderer, 80, 60, 640, 480);
-    pause->set_font("font1");
-    pause->set_text({
+    this->setting = new Board(&music, &font, renderer, 80, 60, 640, 480);
+    setting->set_font("font1");
+    setting->set_text({
         "PAUSE",
         "1. Press 'P' to resume.",
         "2. Press 'R' to restart the game.",
@@ -103,7 +102,7 @@ void Game::handle_event()
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
-        if (event.type == SDL_QUIT)
+        if (event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE))
         {
             set_running(false);
             return;
@@ -144,9 +143,9 @@ void Game::handle_overlay(OVERLAY overlay, SDL_Event& event)
     }
     else if (get_overlay() == OVERLAY::PAUSE)
     {
-        if (pause->is_active())
+        if (setting->is_active())
         {
-            pause->handle_event(event);
+            setting->handle_event(event);
         }
     }
 }
@@ -200,9 +199,9 @@ void Game::render_overlay(OVERLAY overlay)
     }
     else if (overlay == OVERLAY::PAUSE)
     {
-        if (pause->is_active())
+        if (setting->is_active())
         {
-            pause->render(true);
+            setting->render(true);
         }
     }
 }
@@ -212,7 +211,8 @@ void Game::new_menu()
 {
     if (menu == nullptr)
     {
-        menu = new Game_Menu(renderer, &music, &font, &texture, instruction, pause);
+        menu = new Game_Menu(renderer, &music, &font, &texture, instruction, setting);
+        music.stop_all();
         music.playmusic("background_menu", true);
     }
     if (game)
@@ -232,7 +232,8 @@ void Game::new_game()
 
     if (game == nullptr)
     {
-        game = new Game_Playing(renderer, &music, &font, &texture, instruction, pause);
+        game = new Game_Playing(renderer, &music, &font, &texture, instruction, setting);
+        music.stop_all();
         music.playmusic("background_playing", true);
     }
     if (menu)
@@ -251,7 +252,8 @@ void Game::new_gameover()
 {
     if (gameover == nullptr)
     {
-        gameover = new Game_Gameover(renderer, &music, &font, &texture, instruction, pause);
+        gameover = new Game_Gameover(renderer, &music, &font, &texture, instruction, setting);
+        music.stop_all();
         music.playmusic("background_gameover", true);
     }
     if (menu)
@@ -325,10 +327,10 @@ void Game::clean_data()
         delete instruction;
         instruction = nullptr;
     }
-    if (pause)
+    if (setting)
     {
-        pause->clean();
-        delete pause;
-        pause = nullptr;
+        setting->clean();
+        delete setting;
+        setting = nullptr;
     }
 }

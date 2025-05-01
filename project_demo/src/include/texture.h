@@ -20,15 +20,16 @@ class Texture
         // void setBlendMode(SDL_BlendMode blending);
         // void setAlpha(Uint8 alpha);
 
+        bool is_touch(float mouse_x, float mouse_y, SDL_FRect& rect)
+        {
+            return mouse_x >= rect.x && mouse_x <= rect.x + rect.w && mouse_y >= rect.y && mouse_y <= rect.y + rect.h;
+        }
+
         void clean();
 
     private:
         SDL_Renderer* renderer;
         std::unordered_map<const char*, SDL_Texture*> textures;
-        bool is_touch(float mouse_x, float mouse_y, SDL_FRect& rect)
-        {
-            return mouse_x >= rect.x && mouse_x <= rect.x + rect.w && mouse_y >= rect.y && mouse_y <= rect.y + rect.h;
-        }
 };
 
 #endif

@@ -67,6 +67,10 @@ class Game_Playing
         void create_buttons();
         void init();
         void handle_event(SDL_Event& event);
+        void handle_click(SDL_Event& event);
+        void handle_button_click(Button& button);
+        void handle_overlay(SDL_Event& event);
+        void toggle_overlay(OVERLAY overlay, Board* board);
         void update();
         void render();
         void render_for_buttons(int score, int time_seconds);

@@ -20,11 +20,12 @@ enum class OVERLAY
 
 GAME_STATE get_state();
 void set_state(GAME_STATE state);
-GAME_STATE get_previous_state();
+// GAME_STATE get_previous_state();
 
 OVERLAY get_overlay();
+// OVERLAY get_previous_overlay();
 void set_overlay(OVERLAY overlay);
-
+void pop_overlay();
 
 bool is_running();
 void set_running(bool new_running);

@@ -32,7 +32,7 @@ class Board
         void set_text(std::vector<const char*> line, SDL_Color text_color={255, 255, 255, 255});
         void set_font(const char* name);
         void handle_event(SDL_Event& event);
-        void render(bool draw_transparent = false);
+        void render(bool draw_transparent = false, SDL_Color color = {0, 0, 0, 255});
         void clean();
 };
 

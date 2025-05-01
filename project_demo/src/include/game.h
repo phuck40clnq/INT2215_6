@@ -27,7 +27,7 @@ class Game
         Game_Menu* menu;
         Game_Gameover* gameover;
 
-        Board* instruction,* pause;
+        Board* instruction,* setting;
         Music music;
         Font font;
         Texture texture;

@@ -49,10 +49,6 @@ void Music::playmusic(const char* name, bool loop)
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Music not found: %s", name);
         return;
     }
-    if (Mix_PlayingMusic() == 1)
-    {
-        Mix_HaltMusic();
-    }
 
     if (loop)   Mix_PlayMusic(music_tracks[name], 1);
     else        Mix_PlayMusic(music_tracks[name], 0);
@@ -122,4 +118,10 @@ void Music::clean()
     music_sounds.clear();
     Mix_CloseAudio();
     Mix_Quit();
+}
+
+void Music::stop_all()
+{
+    Mix_HaltMusic();
+    Mix_HaltChannel(-1);
 }
