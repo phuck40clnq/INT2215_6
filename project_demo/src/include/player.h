@@ -30,7 +30,8 @@ class Player// : public Object
     float base_player_speed, base_bullet_speed, base_bullet_damage;
     float increase_player_speed=0, increase_bullet_speed=0, increase_bullet_damage=0;
 
-    TimeDelay buff_timer;
+    TimeDelay buff_timer, shield_timer;
+    bool is_shield_active = false;
 
     // Animations
     Animation *animation;
@@ -41,6 +42,9 @@ class Player// : public Object
 
     // Change color
     SDL_Color player_color = {255, 255, 255, 255};
+
+    // Bullet_Item
+    BULLET_TYPE current_bullet_type = BULLET_TYPE::DEFAULT;
 
     public:
         // Player level
@@ -54,11 +58,6 @@ class Player// : public Object
         void buff_player(int sec, Uint32 current_time);
         void combo();
 
-        // Increase base
-        void increase_player_speed_buff(float speed) { increase_player_speed += speed; }
-        void increase_bullet_speed_buff(float speed) { increase_bullet_speed += speed; }
-        void increase_bullet_damage_buff(float damage) { increase_bullet_damage += damage; }
-
         // In buff
         void update_data_buff_combo();
 
@@ -68,6 +67,25 @@ class Player// : public Object
         // Normal
         void update_data();
 
+        // -----Item Buff-----
+        // Increase base
+        void increase_player_speed_buff(float speed) { increase_player_speed += speed; }
+        void increase_bullet_speed_buff(float speed) { increase_bullet_speed += speed; }
+        void increase_bullet_damage_buff(float damage) { increase_bullet_damage += damage; }
+
+        // Buff shield
+        bool shield_active() { return is_shield_active; }
+        void buff_shield(Uint32 timer);
+        void update_shield();
+
+        // Buff exp
+        void increase_player_exp(int exp) { player_exp += exp; }
+
+        // Buff bullet type
+        void set_bullet_type(BULLET_TYPE type) { current_bullet_type = type; }
+        BULLET_TYPE get_bullet_type() { return current_bullet_type; }
+
+        // -----*********-----
         // Change color
         void set_color(SDL_Color color) { player_color = color; }
         SDL_Color get_color() { return player_color; }

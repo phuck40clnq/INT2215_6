@@ -42,17 +42,19 @@ void Game_Gameover::handle_event(SDL_Event& event)
 
 void Game_Gameover::handle_button_click(Button& button)
 {
-    if (strcmp(button.get_text(), "Play") == 0) set_state(GAME_STATE::PLAYING);
+    if (strcmp(button.get_text(), "Menu") == 0) set_state(GAME_STATE::MENU);
+    else if (strcmp(button.get_text(), "Retry") == 0) set_state(GAME_STATE::PLAYING);
+    
     else if (strcmp(button.get_text(), "Instruction") == 0)
     {
         set_overlay(OVERLAY::INSTRUCTION);
         instruction->set_active(true);
     }
-    else if (strcmp(button.get_text(), "Setting") == 0)
-    {
-        set_overlay(OVERLAY::PAUSE);
-        setting->set_active(true);
-    }
+    // else if (strcmp(button.get_text(), "Setting") == 0)
+    // {
+    //     set_overlay(OVERLAY::PAUSE);
+    //     setting->set_active(true);
+    // }
     else if (strcmp(button.get_text(), "Exit") == 0) set_running(false);
 }
 

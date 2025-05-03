@@ -14,13 +14,41 @@ for (int i = 0; i < num_bullets; ++i)
 }
 
 
-void Enemy::render_color()
+void Game_Playing::add_item_to_game(Texture* texture,
+                                     float x, float y, float w, float h,
+                                     ITEM_EFFECT effect, ITEM_TRIGGER trigger,
+                                     Uint32 delay, int level, int enemy_count, int boss_defeated)
 {
-    float hp_ratio = hp / max_hp; // Tỷ lệ máu còn lại, từ 0.0 đến 1.0
-    hp_ratio = std::max(0.0f, std::min(1.0f, hp_ratio)); // Clamp
+    // Tạo item dựa trên hiệu ứng
+    Item* new_item = nullptr;
+    
+    switch (effect)
+    {
+        case ITEM_EFFECT::BUFF:
+            new_item = new Buff_Player_Item(texture, x, y, w, h, effect, trigger, delay, level, enemy_count, boss_defeated);
+            break;
+        case ITEM_EFFECT::SHIELD:
+            new_item = new Shield_Item(texture, x, y, w, h, effect, trigger, delay, level, enemy_count, boss_defeated);
+            break;
+        case ITEM_EFFECT::EXP:
+            new_item = new Exp_Item(texture, x, y, w, h, effect, trigger, delay, level, enemy_count, boss_defeated);
+            break;
+        default:
+            SDL_Log(">>> Unknown ITEM_EFFECT type!");
+            return;
+    }
 
-    // Màu chuyển từ đỏ (255, 0, 0) đến trắng (255, 255, 255)
-    int green_blue = int(255 * hp_ratio);
+    // Thêm item vào vector items
+    items.push_back(new_item);
+    new_item->ready(*this);  // Kiểm tra và kích hoạt item nếu đủ điều kiện
+}
 
-    SDL_SetTextureColorMod(texture, 255, green_blue, green_blue);
+for (auto& item : items)
+{
+    if (item->active() && check_collision(player, *item))
+    {
+        item->update(game); // DONE!
+    }
+
+    item->render(renderer);
 }

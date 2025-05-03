@@ -41,6 +41,14 @@ void Player::handle_event(const SDL_Event &event)
 // Update
 void Player::update()
 {
+    update_data();
+    reset_data();
+
+    // Update shield
+    update_shield();
+
+
+
     if (buff_timer.is_finished()) 
     {
         // Reset
@@ -52,6 +60,7 @@ void Player::update()
         // Set color to normal
         player_color = {255, 255, 255, 255}; // White
     }
+
     fire_bullet();
     move();
     update_bullets();
@@ -99,10 +108,8 @@ void Player::update()
                 float bullet_x = fx + w + offset;
                 float bullet_y = fy + h / 2;
                 // Player::bullets.push_back(Bullet(x + w / 2, y + h / 4, bullet_speed, bullet_damage));
-                Player::bullets.push_back(Bullet(bullet_x, bullet_y, bullet_speed, bullet_damage));
-                SDL_Log("Bullet %i fired!", i);
+                Player::bullets.push_back(Bullet(bullet_x, bullet_y, bullet_speed, bullet_damage, current_bullet_type));
             }
-            SDL_Log("Bullet: bullet_speed=%.2f, bullet_damage=%.2f", bullet_speed, bullet_damage);
             music->playsound("player_shoot", 1);
             fired = false;
         }
@@ -158,6 +165,7 @@ void Player::render(SDL_Renderer* renderer)
 
 void Player::clean()
 {
+    bullets.clear();
     return;
 }
 
@@ -244,4 +252,25 @@ void Player::update_data()
     // if (base_bullet_speed > 10.f) base_bullet_speed = 10.f;
 
     this->base_bullet_damage = 2.f + player_level * 0.05f + increase_bullet_damage;
+}
+
+// ---Item---
+// Shield
+void Player::buff_shield(Uint32 timer)
+{
+    is_shield_active = true;
+    shield_timer.start(timer);
+    SDL_Log(">>> SHIELD ON");
+    player_color = {0, 0, 255, 255}; // Blue
+}
+
+void Player::update_shield()
+{
+    if (is_shield_active && shield_timer.is_finished())
+    {
+        is_shield_active = false;
+        shield_timer.reset();
+        SDL_Log(">>> SHIELD OFF");
+        player_color = {255, 255, 255, 255}; // White
+    }
 }

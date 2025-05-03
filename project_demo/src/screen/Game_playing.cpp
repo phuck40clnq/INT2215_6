@@ -57,12 +57,38 @@ void Game_Playing::render_for_buttons(int score, int time_seconds)
     render_text(renderer, exp_text.c_str(), 625, 21, font->get_font("font2"));
 }
 
+void Game_Playing::loadtexture_item()
+{
+    // Increase bullet damage
+    texture->loadtexture("texture_buff_bullet_damage", "../images/items/bullet_buff_damage_item.png");
+
+    // Bullet type
+    texture->loadtexture("texture_bullet_type_default", "../images/items/bullet_type_default_item.png");
+    texture->loadtexture("texture_bullet_type_explosion", "../images/items/bullet_type_explosion_item.png");
+    texture->loadtexture("texture_bullet_type_ice", "../images/items/bullet_type_ice_item.png");
+    texture->loadtexture("texture_bullet_type_poison", "../images/items/bullet_type_poison_item.png");
+    texture->loadtexture("texture_bullet_type_electric", "../images/items/bullet_type_electric_item.png");
+
+    // Shield
+    texture->loadtexture("texture_buff_player_shield", "../images/items/shield_item.png");
+
+    // Exp
+    texture->loadtexture("texture_buff_player_exp", "../images/items/coin_item.png");
+
+    // Special
+    texture->loadtexture("texture_special_item", "../images/items/star_item.png");
+}
+
+// ---Init---
 void Game_Playing::init()
 {
     // Load texture
     texture->loadtexture("texture_player", "../images/player_texture.png");
     texture->loadtexture("texture_enemy", "../images/enemy_texture.png");
     texture->loadtexture("texture_pause", "../images/setting_button.png");
+    texture->loadtexture("texture_item", "../images/star.jpg");
+
+    loadtexture_item();
 
     // Load music
     music->loadsound("player_move", "../music/sound_effect/player_move_sound.wav");
@@ -92,10 +118,12 @@ void Game_Playing::init()
     time_delay.start(1000);
     time_delay_enemy.start(12000);
 
+    add_all_items_to_game();
+
     return;
 }
 
-
+// ---Handle event---
 void Game_Playing::handle_event(SDL_Event& event)
 {
     handle_click(event);
@@ -181,10 +209,13 @@ void Game_Playing::toggle_overlay(OVERLAY overlay, Board* board)
     }
 }
 
-// Update game
+// ---Update game---
 void Game_Playing::update()
 {
     if (get_overlay() == OVERLAY::PAUSE || get_overlay() == OVERLAY::INSTRUCTION)    return;
+
+    // Update Items
+    update_items();
 
     if (player) player->update();
     for (auto& enemy : enemies)
@@ -198,18 +229,20 @@ void Game_Playing::update()
         time_seconds++;
         time_delay.start(1000);
     }
+
     // Check for collision
     handle_collision(*this);
 
-    // Update enemies
-    update_num_enemy();
+    // Update again
+    clean_items();
+    clean_enemy();
 
     update_feature_level(*this);
 
     return;
 }
 
-// Renderer
+// ---Render---
 void Game_Playing::render()
 {
     SDL_FRect background_playing_rect = {0, 0, 800, 600};
@@ -217,6 +250,9 @@ void Game_Playing::render()
 
     texture->render("background_playing", background_playing_rect, { 255, 255, 255, 255 }, false, false);
     texture->render("texture_pause", pause_rect, { 255, 255, 255, 128 }, true, true);
+
+    // Render items
+    render_items();
 
     player->render(renderer);
     for (auto& enemy : enemies) enemy->render(renderer);
@@ -236,6 +272,13 @@ void Game_Playing::render()
 
 void Game_Playing::clean()
 {
+    for (auto& item : items)
+    {
+        if (item)  delete item;
+        item = nullptr;
+    }
+    items.clear();
+
     if (player)
     {
         delete player;
@@ -249,4 +292,79 @@ void Game_Playing::clean()
     }
     
     buttons.clear();
+}
+
+// Items
+void Game_Playing::add_item_to_game(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay, int level, int enemy_count, int boss_defeated)
+{
+    Item* new_item = nullptr;
+
+    switch (effect)
+    {
+        case ITEM_EFFECT::BUFF_BULLET_DAMAGE:
+            new_item = new Buff_Bullet_Damage_Item(texture, texture_name, x, y, w, h, effect, trigger, delay, level, enemy_count, boss_defeated);
+            break;
+
+        case ITEM_EFFECT::BUFF_BULLET_TYPE:
+            new_item = new Buff_Bullet_Type_Item(texture, texture_name, x, y, w, h, effect, trigger, delay, level, enemy_count, boss_defeated);
+            break;
+
+        case ITEM_EFFECT::SHIELD:
+            new_item = new Buff_Player_Shield_Item(texture, texture_name, x, y, w, h, effect, trigger, delay, level, enemy_count, boss_defeated);
+            break;
+
+        case ITEM_EFFECT::EXP:
+            new_item = new Buff_Player_Exp_Item(texture, texture_name, x, y, w, h, effect, trigger, delay, level, enemy_count, boss_defeated);
+            break;
+
+        default:
+            SDL_Log(">>> Unknown ITEM_EFFECT type!");
+            return;
+    }
+
+    if (new_item == nullptr)
+    {
+        SDL_Log("Failed to create item with effect %d", (int)effect);
+        return;
+    }
+
+    SDL_Log(">>> Item created with effect %d", (int)effect);
+    items.push_back(new_item);
+}
+
+void Game_Playing::add_all_items_to_game()
+{
+    // level = 3
+    add_item_to_game(texture, "texture_buff_bullet_damage", -1, -1, 50, 50, ITEM_EFFECT::BUFF_BULLET_DAMAGE, ITEM_TRIGGER::PLAYER_LEVEL, -1, 3, -1, -1);
+    
+    // 10 sec
+    add_item_to_game(texture, "texture_bullet_type_default", -1, -1, 50, 50, ITEM_EFFECT::BUFF_BULLET_TYPE, ITEM_TRIGGER::TIME_BASED, 10000, -1, -1, -1);
+    
+    // current_enemy = 10;
+    add_item_to_game(texture, "texture_buff_player_shield", -1, -1, 50, 50, ITEM_EFFECT::SHIELD, ITEM_TRIGGER::ENEMY_COUNT, -1, -1, 10, -1);
+    
+    // 5 sec
+    add_item_to_game(texture, "texture_buff_player_exp", -1, -1, 50, 50, ITEM_EFFECT::EXP, ITEM_TRIGGER::TIME_BASED, 5000, -1, -1, -1);
+}
+
+void Game_Playing::update_items()
+{
+    for (auto& item : items)
+    {
+        if (!item->active())
+        {
+            item->ready(*this);
+        }
+    }
+}
+
+void Game_Playing::render_items()
+{
+    for (auto& item : items)
+    {
+        if (item->active())
+        {
+            item->render(renderer);
+        }
+    }
 }

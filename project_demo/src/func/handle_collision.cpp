@@ -21,18 +21,18 @@ void handle_collision(Game_Playing &game)
         }
 
         // Collision player-enemy
-        if (handle_collision_player_enemy(enemy, game))
+        if (handle_collision_player_enemy(enemy, game.player, game))
         {
             set_state(GAME_STATE::GAME_OVER);
             break;
         }
 
         // Collision enemy-bullet
-        handle_collision_enemy_bullet(enemy, game);
+        handle_collision_enemy_bullet(enemy, game.player->get_bullets(), game);
 
         // Collision with item
-        handle_collision_player_item(game);
-        handle_collision_enemy_item(enemy, game);
+        handle_collision_player_item(game.player, game.get_items(), game);
+        handle_collision_enemy_item(enemy, game.get_items(), game);
         
         ++enemy;
     }
@@ -41,7 +41,6 @@ void handle_collision(Game_Playing &game)
 // ---Enemy active---
 std::vector<Enemy*>::iterator handle_enemy_death(std::vector<Enemy*>::iterator enemy, Game_Playing& game)
 {
-
     // Not active
     // Not boss
     if ((*enemy)->is_boss == false)
@@ -49,7 +48,7 @@ std::vector<Enemy*>::iterator handle_enemy_death(std::vector<Enemy*>::iterator e
         // New normal enemy
         game.enemies_to_delete.push_back(*enemy);
         enemy = game.enemies.erase(enemy);
-        game.enemies_to_add.push_back(new Enemy(game.music, game.texture, "texture_enemy", game.enemy_speed, game.enemy_hp));
+        game.enemies_to_add.push_back(new Enemy(game.music, game.texture, "texture_enemy", game.enemy_speed, game.enemy_hp, 820));
         
         game.score += 1;
         game.player->player_exp += 2;
@@ -80,9 +79,8 @@ std::vector<Enemy*>::iterator handle_enemy_death(std::vector<Enemy*>::iterator e
 }
 
 // ---Enemy - Bullet---
-void handle_collision_enemy_bullet(std::vector<Enemy*>::iterator enemy, Game_Playing& game)
+void handle_collision_enemy_bullet(std::vector<Enemy*>::iterator enemy, std::vector<Bullet>& bullets, Game_Playing& game)
 {
-    auto& bullets = game.player->get_bullets();
     for (auto bullet = bullets.begin(); bullet != bullets.end();)
     {
         if (!bullet->active())
@@ -93,7 +91,6 @@ void handle_collision_enemy_bullet(std::vector<Enemy*>::iterator enemy, Game_Pla
         if (check_collision(bullet->get_rect(), (*enemy)->get_rect()))
         {
             // Enemy hit
-            SDL_Log(">>> Enemy hit by bullet!");
             (*enemy)->hit_delay.start(100);
             (*enemy)->move_delay.start(50);
             (*enemy)->hp -= bullet->damage;
@@ -105,24 +102,42 @@ void handle_collision_enemy_bullet(std::vector<Enemy*>::iterator enemy, Game_Pla
 }
 
 // ---Player - Enemy---
-bool handle_collision_player_enemy(std::vector<Enemy*>::iterator enemy, Game_Playing& game)
+bool handle_collision_player_enemy(std::vector<Enemy*>::iterator enemy, Player* player, Game_Playing& game)
 {
-    if (check_collision(game.player->get_rect(), (*enemy)->get_rect()))
+    if (!check_collision(player->get_rect(), (*enemy)->get_rect()))
     {
-        return true;
+        return false;
     }
-    return false;
+    if (player->shield_active())
+    {
+        SDL_Log(">>> Player is shielded!");
+        return false;
+    }
+    return true;
 }
 
 // ---Player - Item---
-void handle_collision_player_item(Game_Playing& game)
+void handle_collision_player_item(Player* player, std::vector<Item*>& items, Game_Playing& game)
 {
-    for (auto& item : game.items)
+    for (auto& item : items)
+    {
+        if (!item->active())
+            continue;
+
+        if (check_collision(player->get_rect(), item->get_rect()))
+        {
+            item->apply_buff(game);
+            item->set_active(false);  // hoặc flag đặc biệt nếu cần
+            game.items_to_delete.push_back(item); // đánh dấu để xóa sau
+            game.player->buff = true;
+        }
+    }
+
     return;
 }
 
 // ---Enemy - Item---
-void handle_collision_enemy_item(std::vector<Enemy*>::iterator enemy, Game_Playing& game)
+void handle_collision_enemy_item(std::vector<Enemy*>::iterator enemy, std::vector<Item*>& items, Game_Playing& game)
 {
     return;
 }

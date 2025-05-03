@@ -5,7 +5,7 @@
 #include "button.h"
 #include "enemy.h"
 #include "Game_state.h"
-#include "item.h"
+#include "all_items.h"
 #include "player.h"
 #include "texture.h"
 
@@ -23,6 +23,8 @@ class Game_Playing
     TimeDelay time_delay;
 
     Board* instruction,* setting;
+
+    std::vector<Item*> items;
 
     public:
         // Features
@@ -43,7 +45,7 @@ class Game_Playing
 
         int count_boss_defeated = 0;
 
-        void update_num_enemy()
+        void clean_enemy()
         {
              // Delete enemies
             for (auto& delete_enemy : enemies_to_delete)   delete delete_enemy;
@@ -54,18 +56,38 @@ class Game_Playing
             enemies_to_add.clear();
         }
 
-        std::vector<Item*> items;
-
         SDL_Renderer* renderer;
         Music* music;
         Font* font;
         Texture* texture;
+
+        // Items
+        std::vector<Item*> items_to_delete;
+        std::vector<Item*>& get_items() { return items; }
+        void add_item_to_game(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay = -1, int level = -1, int enemy_count = -1, int boss_defeated = -1);
+        void add_all_items_to_game();
+        void update_items();
+        void render_items();
+        void clean_items()
+        {
+            for (auto item : items_to_delete)
+            {
+                auto it = std::find(items.begin(), items.end(), item);
+                if (it != items.end())
+                {
+                    delete *it;
+                    items.erase(it);
+                }
+            }
+            items_to_delete.clear();
+        }
 
         Game_Playing(SDL_Renderer* renderer, Music* music, Font* font, Texture* texture, Board* instruction, Board* setting);
         ~Game_Playing() { clean(); }
 
         void create_buttons();
         void init();
+        void loadtexture_item();
         void handle_event(SDL_Event& event);
         void handle_click(SDL_Event& event);
         void handle_button_click(Button& button);

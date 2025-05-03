@@ -17,6 +17,15 @@ class Board
     SDL_Color text_color;
     SDL_Renderer* renderer;
     Button close_button;
+
+    std::vector<Button> extra_buttons; // Thêm vector này
+
+    // Thông số sắp xếp các button
+    float button_x_offset = 10;
+    float button_y_offset = 10;
+    float button_spacing = 5;
+    int button_count = 0;
+
     void draw_transparent();
 
     Music* music;
@@ -34,6 +43,8 @@ class Board
         void handle_event(SDL_Event& event);
         void render(bool draw_transparent = false, SDL_Color color = {0, 0, 0, 255});
         void clean();
+
+        void add_button(const char* text);
 };
 
 #endif
