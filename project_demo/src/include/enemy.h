@@ -23,16 +23,20 @@ class Enemy// : public Object
 
     public:
         float hp, max_hp, displayed_hp;
-        float speed;
+        float speed, original_speed;
 
         bool reached = false;
         bool is_boss;
 
-        TimeDelay hit_delay;
-        TimeDelay move_delay;
+        // Bullet_type
+        TimeDelay freeze_duration, ice_effect_duration, 
+        poison_tick_delay, poison_effect_duration, 
+        stun_duration;
+        bool is_iced = false, is_frozen = false, is_poisoned = false, is_stun = false;
+        float ice_speed, poison_damage;
 
         // Constructor and Destructor
-        Enemy(Music* music, Texture* texture, const char* texture_name, float s = 1.f, float hp = 5.f, float x=800.f, float y=-1.f, int w=85, int h=85, bool is_boss=false, int frames=1);
+        Enemy(Music* music, Texture* texture, const char* texture_name, float s = 1.f, float hp = 5.f, float x=850.f, float y=-1.f, int w=85, int h=85, bool is_boss=false, int frames=1);
 
         SDL_FRect get_rect() { return {fx_enemy, fy_enemy, float(w), float(h)}; }
 
@@ -40,7 +44,12 @@ class Enemy// : public Object
         bool active() { return (hp > 0); }
         void handle_event(const SDL_Event &event);
         void update();
-            void update_color();
+        void apply_bullet_effects();
+        void apply_effects_boss();
+        void apply_effects_normal();
+        void update_color();
+        void update_boss_color();
+        void update_normal_color();
         void move();
         void update_displayed_hp();
         void render(SDL_Renderer *renderer);

@@ -8,9 +8,14 @@
 class Music
 {
     private:
+
+        bool is_muted = false;
+
         std::unordered_map<const char*, Mix_Music*> music_tracks;
         std::unordered_map<const char*, Mix_Chunk*> music_sounds;
 
+        std::unordered_map<Mix_Music*, int> original_music_volumes;
+        std::unordered_map<Mix_Chunk*, int> original_sound_volumes;
     public:
         bool init();
         void loadmusic(const char* name, const char* path);
@@ -22,6 +27,12 @@ class Music
         void setvolume_sound(int volume = 128);
 
         void stop_all();
+        void apply_volume(int volume);
+
+        bool ismuted() { return this->is_muted; }
+
+        void mute();
+        void unmute();
 
         void clean();
 

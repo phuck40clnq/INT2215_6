@@ -31,7 +31,7 @@ void Game_Gameover::create_buttons()
     buttons.push_back(Button(font, 300, 400, 200, 50, "Exit"));
 
     for (auto& button : buttons) 
-        button.set_font("font1");
+        button.set_font("font3");
 }
 
 // ---Handle event---

@@ -21,6 +21,7 @@ Enemy::Enemy(Music* music, Texture* texture, const char* texture_name, float s, 
 
     this->hp = this->max_hp;
     this->displayed_hp = this->hp;
+    this->original_speed = this->speed;
 }
 
 void Enemy::handle_event(const SDL_Event &event)
@@ -30,10 +31,61 @@ void Enemy::handle_event(const SDL_Event &event)
 
 void Enemy::update()
 {
+    apply_bullet_effects();
     move();
     update_displayed_hp();
     update_color();
     return;
+}
+
+void Enemy::apply_bullet_effects()
+{
+    if (is_boss)
+        apply_effects_boss();
+    else
+        apply_effects_normal();
+}
+
+void Enemy::apply_effects_boss()
+{
+    speed = original_speed;
+
+    // Only freeze
+    if (freeze_duration.is_active())    speed = 0.f;
+}
+
+void Enemy::apply_effects_normal()
+{
+    // --- Speed ---
+    speed = original_speed;
+    if (freeze_duration.is_active() || stun_duration.is_active())
+    {
+        speed = 0.f;
+    }
+    else if (is_iced && !ice_effect_duration.is_finished())
+    {
+        speed = ice_speed;
+    }
+
+    // --- Poison ---
+    if (is_poisoned)
+    {
+        if (poison_effect_duration.is_finished())
+        {
+            is_poisoned = false;
+        }
+        else if (poison_tick_delay.is_finished())
+        {
+            hp -= poison_damage;
+            poison_tick_delay.start(1000);
+        }
+    }
+
+    // --- Freeze & Ice cleanup ---
+    if (is_iced && ice_effect_duration.is_finished())
+    {
+        is_iced = false;
+    }
 }
 
 void Enemy::update_displayed_hp()
@@ -48,11 +100,6 @@ void Enemy::update_displayed_hp()
 
 void Enemy::move()
 {
-    // Normal enemy has delay
-    if (move_delay.is_active() && !is_boss)
-    {
-        return;
-    }
     fx_enemy -= speed;
     if (fx_enemy < 0)
     {
@@ -62,15 +109,17 @@ void Enemy::move()
 
 void Enemy::update_color()
 {
-    if (hit_delay.is_active())
-    {
-        enemy_color = {255, 100, 100, 255}; // Change color
-        return;
-    }
+    if (is_boss)
+        update_boss_color();
+    else
+        update_normal_color();
+}
 
-    if (!is_boss)
+void Enemy::update_boss_color()
+{
+    if (freeze_duration.is_active())
     {
-        enemy_color = {255, 255, 255, 255}; // Normal enemy
+        enemy_color = {0, 0, 255, 255}; // Frozen - Blue
         return;
     }
 
@@ -80,7 +129,42 @@ void Enemy::update_color()
     Uint8 red = 255;
     Uint8 green = static_cast<Uint8>(color_value);
     Uint8 blue = static_cast<Uint8>(color_value);
-    enemy_color = {red, green, blue, 255}; // Boss enemy
+    enemy_color = {red, green, blue, 255};
+
+    // Set default
+    enemy_color = {255, 255, 255, 255};
+
+    return;
+}
+
+void Enemy::update_normal_color()
+{
+    if (freeze_duration.is_active())
+    {
+        enemy_color = {0, 0, 255, 255}; // Frozen - Blue
+        return;
+    }
+
+    if (stun_duration.is_active())
+    {
+        enemy_color = {255, 255, 0, 255}; // Stun - Yellow
+        return;
+    }
+
+    if (is_poisoned)
+    {
+        enemy_color = {0, 200, 0, 255}; // Poison - Green
+        return;
+    }
+
+    if (is_iced)
+    {
+        enemy_color = {100, 100, 255, 255}; // Ice slow - Soft Blue
+        return;
+    }
+
+    // Set default
+    enemy_color = {255, 255, 255, 255};
 
     return;
 }

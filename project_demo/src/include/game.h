@@ -16,6 +16,8 @@
 class Game
 {
     private:
+        bool reset_game = false;
+
         // Frames
         unsigned frame_start;
         int frame_delay = 1000 / fps;
@@ -32,6 +34,9 @@ class Game
         Font font;
         Texture texture;
 
+        void set_setting_button();
+        void handle_setting_button(const char* text);
+
     public:
 
         SDL_Renderer* get_renderer() { return renderer; }
@@ -44,9 +49,11 @@ class Game
         void new_game();
         void new_gameover();
         void new_instruction();
+        void restart_game();
 
         // Game run
         void handle_event();
+        void handle_reset_game();
         void handle_state(GAME_STATE state, SDL_Event& event);
         void handle_overlay(OVERLAY overlay, SDL_Event& event);
 

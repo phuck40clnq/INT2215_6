@@ -1,9 +1,11 @@
 #include "../include/bullet.h"
+#include "../include/enemy.h"
 
 Bullet::Bullet(float x, float y, float s, float damage, BULLET_TYPE type)
     : x(x), y(y), s(s), damage(damage), is_active(true), type(type)
 {
     set_color_from_type();
+    set_properties_from_type();
 }
 
 Bullet::~Bullet() {}
@@ -41,11 +43,45 @@ void Bullet::set_color_from_type()
     }
 }
 
+void Bullet::set_properties_from_type()
+{
+    switch (type)
+    {
+        case BULLET_TYPE::EXPLOSION:
+            damage *= 2.f;
+            width_bullet = 15;
+            height_bullet = 15;
+            break;
+        case BULLET_TYPE::ICE:
+            damage *= 1.f;
+            break;
+        case BULLET_TYPE::POISON:
+            damage *= 1.f;
+            break;
+        case BULLET_TYPE::ELECTRIC:
+            damage *= 1.2f;
+            s *= 0.6f;
+            break;
+        default:
+            break;
+    }
+}
+
 void Bullet::render(SDL_Renderer* renderer)
 {
     if (!is_active) return;
-    SDL_FRect rect = {x, y, float(width_bullet), float(height_bullet)};
+    SDL_FRect rect = {x, y, width_bullet, height_bullet};
     SDL_SetRenderDrawColor(renderer, bullet_color.r, bullet_color.g, bullet_color.b, bullet_color.a);
     SDL_RenderFillRectF(renderer, &rect);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Reset to black
+}
+
+bool Bullet::has_hit_enemy(Enemy* enemy)
+{
+    return hit_enemies.find(enemy) != hit_enemies.end();
+}
+
+void Bullet::mark_hit_enemy(Enemy* enemy)
+{
+    hit_enemies.insert(enemy);
 }

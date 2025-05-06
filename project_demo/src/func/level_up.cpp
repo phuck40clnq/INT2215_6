@@ -9,9 +9,6 @@ void level_up_player(Game_Playing &game)
     game.player->player_level++;
     game.player->exp_next_level += 9;
     game.player->update_data();
-
-    SDL_Log(">>> Player level up! Level: %d", game.player->player_level);
-
     return;
 }
 
