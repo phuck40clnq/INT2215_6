@@ -12,7 +12,7 @@ class Game_Menu
     private:
         std::vector<Button> buttons;
 
-        Board* instruction,* setting;
+        Board* instruction,* setting,* quit;
 
         SDL_Renderer* renderer;
         Music* music;
@@ -20,7 +20,7 @@ class Game_Menu
         Texture* texture;
 
     public:
-        Game_Menu(SDL_Renderer* renderer, Music* music, Font* font, Texture* texture, Board* instruction, Board* setting);
+        Game_Menu(SDL_Renderer* renderer, Music* music, Font* font, Texture* texture, Board* instruction, Board* setting, Board* quit);
         ~Game_Menu() { clean(); }
 
         void init();

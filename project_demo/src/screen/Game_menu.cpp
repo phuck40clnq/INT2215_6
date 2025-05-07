@@ -1,7 +1,7 @@
 #include "../include/Game_menu.h"
 #include <cstring>
 
-Game_Menu::Game_Menu(SDL_Renderer* renderer, Music* music, Font* font, Texture* texture, Board* instruction, Board* setting)
+Game_Menu::Game_Menu(SDL_Renderer* renderer, Music* music, Font* font, Texture* texture, Board* instruction, Board* setting, Board* quit)
 { 
     this->renderer = renderer;
     this->music = music;
@@ -9,6 +9,7 @@ Game_Menu::Game_Menu(SDL_Renderer* renderer, Music* music, Font* font, Texture* 
     this->texture = texture;
     this->instruction = instruction;
     this->setting = setting;
+    this->quit = quit;
     init(); 
     create_buttons(); 
 }
@@ -53,7 +54,11 @@ void Game_Menu::handle_button_click(Button& button)
         set_overlay(OVERLAY::PAUSE);
         setting->set_active(true);
     }
-    else if (strcmp(button.get_text(), "Exit") == 0) set_running(false);
+    else if (strcmp(button.get_text(), "Exit") == 0)
+    {
+        set_overlay(OVERLAY::QUIT);
+        quit->set_active(true);
+    }
 }
 
 void Game_Menu::handle_click(SDL_Event& event)
@@ -97,6 +102,11 @@ void Game_Menu::handle_overlay(SDL_Event& event)
         instruction->set_active(false);
         pop_overlay();
     }
+    if (!quit->is_active() && get_overlay() == OVERLAY::QUIT)
+    {
+        quit->set_active(false);
+        pop_overlay();
+    }
 
     // Handle key events for overlay
     if (event.type == SDL_KEYDOWN)
@@ -108,6 +118,10 @@ void Game_Menu::handle_overlay(SDL_Event& event)
         else if (event.key.keysym.sym == SDLK_i)
         {
             toggle_overlay(OVERLAY::INSTRUCTION, instruction); // Toggle INSTRUCTION
+        }
+        else if (event.key.keysym.sym == SDLK_ESCAPE)
+        {
+            toggle_overlay(OVERLAY::QUIT, quit); // Toggle QUIT
         }
     }
 }

@@ -27,7 +27,7 @@ class Game
         Game_Menu* menu;
         Game_Gameover* gameover;
 
-        Board* instruction,* setting;
+        Board* instruction,* setting,* quit;
         Music music;
         Font font;
         Texture texture;
@@ -43,7 +43,6 @@ class Game
         void new_menu();
         void new_game();
         void new_gameover();
-        void new_instruction();
 
         // Game run
         void handle_event();

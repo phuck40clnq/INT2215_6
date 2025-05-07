@@ -89,6 +89,13 @@ bool Game::init(const char* title, int width, int height)
         "3. Press 'ESC' to exit.",
     });
 
+    this->quit = new Board(&music, &font, renderer, 80, 60, 640, 480);
+    quit->set_font("font1");
+    quit->set_text({
+        "QUIT",
+    });
+
+
 
     // ---Success---
     set_running(true);
@@ -148,6 +155,13 @@ void Game::handle_overlay(OVERLAY overlay, SDL_Event& event)
             setting->handle_event(event);
         }
     }
+    else if (get_overlay() == OVERLAY::QUIT)
+    {
+        if (quit->is_active())
+        {
+            quit->handle_event(event);
+        }
+    }
 }
 
 // ---Update game---
@@ -204,6 +218,13 @@ void Game::render_overlay(OVERLAY overlay)
             setting->render(true);
         }
     }
+    else if (overlay == OVERLAY::QUIT)
+    {
+        if (quit->is_active())
+        {
+            quit->render(true);
+        }
+    }
 }
 
 // ---Clean screen for each case---
@@ -211,7 +232,7 @@ void Game::new_menu()
 {
     if (menu == nullptr)
     {
-        menu = new Game_Menu(renderer, &music, &font, &texture, instruction, setting);
+        menu = new Game_Menu(renderer, &music, &font, &texture, instruction, setting, quit);
         music.stop_all();
         music.playmusic("background_menu", true);
     }
@@ -332,5 +353,11 @@ void Game::clean_data()
         setting->clean();
         delete setting;
         setting = nullptr;
+    }
+    if (quit)
+    {
+        quit->clean();
+        delete quit;
+        quit = nullptr;
     }
 }

@@ -16,6 +16,7 @@ enum class OVERLAY
     NONE,
     INSTRUCTION,
     PAUSE,
+    QUIT,
 };
 
 GAME_STATE get_state();
