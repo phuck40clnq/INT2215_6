@@ -11,6 +11,7 @@ enum class ITEM_EFFECT
     BUFF_BULLET_TYPE,
     SHIELD,
     EXP,
+    BOOM,
 };
 
 enum class ITEM_TRIGGER
@@ -19,6 +20,7 @@ enum class ITEM_TRIGGER
     PLAYER_LEVEL,
     ENEMY_COUNT,
     BOSS_DEFEATED,
+    NONE,
 };
 
 class Game_Playing;
@@ -39,6 +41,8 @@ class Item
         void ready(const Game_Playing& game);
 
         void random_position();
+
+        ITEM_EFFECT get_effect() { return effect; }
 
     protected:
         SDL_FRect rect;

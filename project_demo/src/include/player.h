@@ -8,6 +8,7 @@
 #include "texture.h"
 #include "TimeDelay.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <vector>
 
 class Player// : public Object
@@ -46,7 +47,25 @@ class Player// : public Object
     // Bullet_Item
     BULLET_TYPE current_bullet_type = BULLET_TYPE::DEFAULT;
 
+    // Render
+    TimeDelay status_timer;
+    const char* status_text;
+    SDL_Color status_text_color;
+    int status_text_angle;
+    Uint32 status_time_duration;
+    int status_text_x, status_text_y;
+
+    void show_status_text(const char* text, Uint32 ms, int x, int y, int angle = 0, SDL_Color color = {0, 0, 0, 255});
+    void render_status_text(SDL_Renderer* renderer);
+
+    // For shield
+    void draw_circle(SDL_Renderer* renderer, float cx, float cy, float r, SDL_Color color);
+    void render_shield(SDL_Renderer* renderer);
+
     public:
+        bool is_dead = false;
+        TTF_Font* font;
+
         // Player level
         int player_level = 1;
         int player_exp = 0;
@@ -103,6 +122,7 @@ class Player// : public Object
             void fire_bullet();   bool fired = false;
             
         void update(); //override;
+        void reset_default();
             // Hàm hỗ trợ
             void move();
             bool keys[SDL_NUM_SCANCODES] = {false};

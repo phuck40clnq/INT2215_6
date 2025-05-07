@@ -6,8 +6,8 @@
       "type": "lldb",
       "request": "launch",
       "args": [],
-      "cwd": "/Users/ngcphuc/hello-world",
-      "program": "/Users/ngcphuc/hello-world/build/Debug/outDebug"
+      "cwd": "/Users/ngcphuc/hello-world/project_demo/src/func",
+      "program": "/Users/ngcphuc/hello-world/project_demo/src/func/build/Debug/outDebug"
     }
   ]
 }

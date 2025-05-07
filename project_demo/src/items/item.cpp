@@ -60,6 +60,10 @@ void Item::ready(const Game_Playing& game)
             if (game.count_boss_defeated >= boss_defeated)
                 set_active(true);
             break;
+        case ITEM_TRIGGER::NONE:
+            break;
+        default:
+            break;
     }
 }
 

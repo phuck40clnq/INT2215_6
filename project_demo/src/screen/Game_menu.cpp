@@ -32,7 +32,7 @@ void Game_Menu::create_buttons()
     buttons.push_back(Button(font, 300, 430, 200, 50, "Setting"));
     buttons.push_back(Button(font, 300, 510, 200, 50, "Exit"));
     for (auto& button : buttons) 
-        button.set_font("font1");
+        button.set_font("font2");
 }
 
 // ---Handle event---
@@ -152,7 +152,7 @@ void Game_Menu::render()
     texture->render("background_menu", background_menu, {255, 255, 255, 255}, false, false);
     texture->render("texture_pause", pause_rect, { 255, 255, 255, 128 }, true, true);
 
-    render_text(renderer, "WELCOME", 200, 130, font->get_font("font1"));
+    render_text(renderer, "WELCOME", 200, 130, font->get_font("font1_80"));
 
     int mouse_x, mouse_y;
     SDL_GetMouseState(&mouse_x, &mouse_y);

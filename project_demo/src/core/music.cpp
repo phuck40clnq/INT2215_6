@@ -26,6 +26,7 @@ void Music::loadmusic(const char* name, const char* path)
         return;
     }
     music_tracks[name] = music;
+    original_music_volumes[music] = MIX_MAX_VOLUME;
     return;
 }
 
@@ -38,6 +39,7 @@ void Music::loadsound(const char* name, const char* path)
         return;
     }
     music_sounds[name] = sound;
+    original_sound_volumes[sound] = MIX_MAX_VOLUME;
     return;
 }
 
@@ -74,16 +76,28 @@ void Music::setvolume(int volume, const char* name)
         if (music_tracks.find(name) != music_tracks.end())
         {
             Mix_VolumeMusic(volume);
+            Mix_Music* music = music_tracks[name];
+            original_music_volumes[music] = volume;
         }
         else if (music_sounds.find(name) != music_sounds.end())
         {
             Mix_VolumeChunk(music_sounds[name], volume);
+            Mix_Chunk* sound = music_sounds[name];
+            original_sound_volumes[sound] = volume;
         }
     }
     else
     {
-        for (auto& music : music_tracks)   Mix_VolumeMusic(volume);
-        for (auto& sound : music_sounds)   Mix_VolumeChunk(sound.second, volume);
+        for (auto& music : music_tracks)
+        {
+            Mix_VolumeMusic(volume);
+            original_music_volumes[music.second] = volume;
+        }
+        for (auto& sound : music_sounds)
+        {
+            Mix_VolumeChunk(sound.second, volume);
+            original_sound_volumes[sound.second] = volume;
+        }
     }
 }
 
@@ -92,6 +106,7 @@ void Music::setvolume_music(int volume)
     for (auto& music : music_tracks)
     {
         Mix_VolumeMusic(volume);
+        original_music_volumes[music.second] = volume;
     }
 }
 
@@ -100,6 +115,7 @@ void Music::setvolume_sound(int volume)
     for (auto& sound : music_sounds)
     {
         Mix_VolumeChunk(sound.second, volume);
+        original_sound_volumes[sound.second] = volume;
     }
 }
 
@@ -116,6 +132,8 @@ void Music::clean()
     }
     music_tracks.clear();
     music_sounds.clear();
+    original_music_volumes.clear();
+    original_sound_volumes.clear();
     Mix_CloseAudio();
     Mix_Quit();
 }
@@ -124,4 +142,39 @@ void Music::stop_all()
 {
     Mix_HaltMusic();
     Mix_HaltChannel(-1);
+}
+
+void Music::apply_volume(int volume)
+{
+    for (auto& music : music_tracks)
+    {
+        Mix_VolumeMusic(volume);
+    }
+    for (auto& sound : music_sounds)
+    {
+        Mix_VolumeChunk(sound.second, volume);
+    }
+}
+
+void Music::mute()
+{
+    if (!is_muted)
+    {
+        apply_volume(0);
+        is_muted = true;
+    }
+}
+
+void Music::unmute()
+{
+    if (!is_muted)  return;
+    for (auto& music : music_tracks)
+    {
+        setvolume(original_music_volumes[music.second], music.first);
+    }
+    for (auto& sound : music_sounds)
+    {
+        setvolume(original_sound_volumes[sound.second], sound.first);
+    }
+    is_muted = false;
 }

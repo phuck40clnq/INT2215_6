@@ -1,6 +1,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include <functional>
 #include <SDL2/SDL.h>
 #include <vector>
 
@@ -18,12 +19,14 @@ class Board
     SDL_Renderer* renderer;
     Button close_button;
 
-    std::vector<Button> extra_buttons; // Thêm vector này
+    std::vector<Button> buttons;
 
     // Thông số sắp xếp các button
     float button_x_offset = 10;
     float button_y_offset = 10;
     float button_spacing = 5;
+    float button_width = 100;
+    float button_height = 50;
     int button_count = 0;
 
     void draw_transparent();
@@ -31,6 +34,8 @@ class Board
     Music* music;
     Font* font;
     const char* name_font;
+
+    std::function<void(const char*)> button_callback = nullptr;
 
     public:
         Board(Music* music, Font* font, SDL_Renderer* renderer, int x, int y, int w, int h);
@@ -41,10 +46,17 @@ class Board
         void set_text(std::vector<const char*> line, SDL_Color text_color={255, 255, 255, 255});
         void set_font(const char* name);
         void handle_event(SDL_Event& event);
+        void handle_close_button_click(SDL_Event& event);
+        void handle_button_click(SDL_Event& event);
         void render(bool draw_transparent = false, SDL_Color color = {0, 0, 0, 255});
         void clean();
 
         void add_button(const char* text);
+
+        void set_button_callback(std::function<void(const char*)> callback)
+        {
+            this->button_callback = callback;
+        }
 };
 
 #endif

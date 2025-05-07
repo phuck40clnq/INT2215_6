@@ -8,8 +8,10 @@ void handle_collision(Game_Playing &game);
 
 std::vector<Enemy*>::iterator handle_enemy_death(std::vector<Enemy*>::iterator enemy, Game_Playing& game);
 void handle_collision_enemy_bullet(std::vector<Enemy*>::iterator enemy, std::vector<Bullet>& bullets, Game_Playing& game);
-bool handle_collision_player_enemy(std::vector<Enemy*>::iterator enemy, Player* player, Game_Playing& game);
+bool handle_player_death(Player* player);
+void handle_collision_player_enemy(std::vector<Enemy*>::iterator enemy, Player* player, Game_Playing& game);
 void handle_collision_player_item(Player* player, std::vector<Item*>& items, Game_Playing& game);
+void apply_bullet_effect_on_enemy(std::vector<Enemy*>::iterator enemy, Bullet& bullet, Game_Playing& game);
 void handle_collision_enemy_item(std::vector<Enemy*>::iterator enemy, std::vector<Item*>& items, Game_Playing& game);
 
 #endif

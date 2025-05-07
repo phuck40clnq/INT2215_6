@@ -10,6 +10,45 @@ Game::Game()
     this->gameover = nullptr;
 }
 
+void Game::set_setting_button()
+{
+    setting->add_button("Resume");
+    setting->add_button("Mute");
+    setting->add_button("Unmute");
+    setting->add_button("Restart");
+}
+
+void Game::handle_setting_button(const char* text)
+{
+    if (strcmp(text, "Mute") == 0)
+    {
+        music.mute();
+    }
+    else if (strcmp(text, "Unmute") == 0)
+    {
+        music.unmute();
+    }
+    else if (strcmp(text, "Resume") == 0)
+    {
+        setting->set_active(false);
+        pop_overlay(); // Pop overlay
+    }
+    else if (strcmp(text, "Restart") == 0)
+    {
+        if (instruction->is_active())
+            instruction->set_active(false);
+
+        if (setting->is_active())
+            setting->set_active(false);
+
+        set_overlay(OVERLAY::NONE);
+
+        restart_game();
+        set_state(GAME_STATE::PLAYING);
+    }
+    return;
+}
+
 bool Game::init(const char* title, int width, int height)
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -66,27 +105,44 @@ bool Game::init(const char* title, int width, int height)
     music.setvolume_sound(5);
 
     // ---Load font---
+    font.loadfont("font1_80", "../font/font1.ttf", 80, { 0, 0, 0, 255 });
     font.loadfont("font1", "../font/font1.ttf", 30, { 0, 0, 0, 255 });
     font.loadfont("font2", "../font/font2.ttf", 30, { 0, 0, 0, 255 });
     font.loadfont("font3", "../font/font3.ttf", 30, { 0, 0, 0, 255 });
+    font.loadfont("font4", "../font/font4.ttf", 30, { 0, 0, 0, 255 });
+    font.loadfont("font5", "../font/font5.ttf", 30, { 0, 0, 0, 255 });
+    font.loadfont("font6", "../font/font6.ttf", 30, { 0, 0, 0, 255 });
+    font.loadfont("font7", "../font/font7.ttf", 30, { 0, 0, 0, 255 });
+    font.loadfont("font8", "../font/font8.ttf", 40, { 0, 0, 0, 255 });
+
+    font.loadfont("font5_35", "../font/font5.ttf", 35, { 0, 0, 0, 255 });
     
     this->instruction = new Board(&music, &font, renderer, 80, 60, 640, 480);
-    instruction->set_font("font1");
+    instruction->set_font("font8");
     instruction->set_text({
         "INSTRUCTION",
-        "1. Press Arrow keys to move.",
-        "2. Press 'SPACE' to shoot.",
+        "1, Press Arrow keys to move.",
+        "2, Press 'SPACE' to shoot.",
+        "3, Press 'M' to mute/unmute the music.",
+        "4, Press 'I' to show/hide the instruction.",
+        "5, Press 'P' to pause the game.",
+        "6, Press 'R' to restart the game.",
+        "7, Press 'ESC' to exit.",
+    });
+    this->setting = new Board(&music, &font, renderer, 80, 60, 640, 480);
+    setting->set_font("font5_35");
+    setting->set_text({
+        "PAUSE",
+        "1. Press 'M' to mute/unmute the music.",
+        "2. Press 'I' to show/hide the instruction.",
         "3. Press 'P' to pause the game.",
         "4. Press 'R' to restart the game.",
         "5. Press 'ESC' to exit.",
     });
-    this->setting = new Board(&music, &font, renderer, 80, 60, 640, 480);
-    setting->set_font("font1");
-    setting->set_text({
-        "PAUSE",
-        "1. Press 'P' to resume.",
-        "2. Press 'R' to restart the game.",
-        "3. Press 'ESC' to exit.",
+    set_setting_button();
+    this->setting->set_button_callback([this](const char* text)
+    {
+        handle_setting_button(text);
     });
 
     this->quit = new Board(&music, &font, renderer, 80, 60, 640, 480);
@@ -114,10 +170,50 @@ void Game::handle_event()
             set_running(false);
             return;
         }
+        if (event.type == SDL_KEYDOWN)
+        {
+            if (event.key.keysym.sym == SDLK_m)
+            {
+                if (music.ismuted())
+                    music.unmute();
+                else
+                    music.mute();
+            }
+            //  
+            else if (event.key.keysym.sym == SDLK_r && event.key.repeat == 0)
+            {
+                reset_game = true;
+            }
+        }
+        else if (event.type == SDL_KEYUP)
+        {
+            if (event.key.keysym.sym == SDLK_r)
+            {
+                reset_game = false;
+            }
+        }
 
         handle_state(get_state(), event);
         handle_overlay(get_overlay(), event);
     }
+}
+
+void Game::handle_reset_game()
+{
+    if (!reset_game)    return;
+    if (instruction->is_active())
+        instruction->set_active(false);
+
+    if (setting->is_active())
+        setting->set_active(false);
+
+    set_overlay(OVERLAY::NONE);
+
+    restart_game();
+    set_state(GAME_STATE::PLAYING);
+
+
+    reset_game = false;
 }
 
 void Game::handle_state(GAME_STATE state, SDL_Event& event)
@@ -167,6 +263,7 @@ void Game::handle_overlay(OVERLAY overlay, SDL_Event& event)
 // ---Update game---
 void Game::update()
 {
+    handle_reset_game();
     if (get_state() == GAME_STATE::PLAYING && game)
         game->update();
 }
@@ -286,6 +383,34 @@ void Game::new_gameover()
     {
         game->clean();
         game = nullptr;
+    }
+}
+
+void Game::restart_game()
+{
+    if (game)
+    {
+        game->clean();
+        delete game;
+        game = nullptr;
+    }
+
+    game = new Game_Playing(renderer, &music, &font, &texture, instruction, setting);
+    music.stop_all();
+    music.playmusic("background_playing", true);
+
+    if (menu)
+    {
+        menu->clean();
+        delete menu;
+        menu = nullptr;
+    }
+
+    if (gameover)
+    {
+        gameover->clean();
+        delete gameover;
+        gameover = nullptr;
     }
 }
 

@@ -18,7 +18,7 @@ class Buff_Bullet_Type_Item : public Item
         void update(Game_Playing& game) override;
         void apply_buff(Game_Playing& game) override;  
 
-        void set_bullet_type(BULLET_TYPE bullet_type) { this->bullet_type = bullet_type; }
+        void set_bullet_type(BULLET_TYPE bullet_type) { this->bullet_type = bullet_type; set_texture_name(); }
 
         void random_bullet_type();
         void set_texture_name();
