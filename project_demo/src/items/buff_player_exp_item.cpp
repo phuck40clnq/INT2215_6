@@ -1,8 +1,8 @@
 #include "../include/buff_player_exp_item.h"
 #include "../include/Game_playing.h"
 
-Buff_Player_Exp_Item::Buff_Player_Exp_Item(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay, int level, int enemy_count, int boss_defeated)
-    : Item(texture, texture_name, x, y, w, h, effect, trigger, delay, level, enemy_count, boss_defeated) {}
+Buff_Player_Exp_Item::Buff_Player_Exp_Item(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay, int level, int enemy_count, int boss_defeated, bool repeat)
+    : Item(texture, texture_name, x, y, w, h, effect, trigger, delay, level, enemy_count, boss_defeated, repeat) {}
 
 void Buff_Player_Exp_Item::render(SDL_Renderer* renderer)
 {

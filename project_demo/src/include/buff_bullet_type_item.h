@@ -10,7 +10,7 @@ class Buff_Bullet_Type_Item : public Item
         BULLET_TYPE bullet_type = BULLET_TYPE::DEFAULT;
 
     public:
-        Buff_Bullet_Type_Item(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay = -1, int level = -1, int enemy_count = -1, int boss_defeated = -1, BULLET_TYPE bullet_type = BULLET_TYPE::DEFAULT);
+        Buff_Bullet_Type_Item(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay = -1, int level = -1, int enemy_count = -1, int boss_defeated = -1, bool repeat = true, BULLET_TYPE bullet_type = BULLET_TYPE::DEFAULT);
         ~Buff_Bullet_Type_Item() { clean(); }
         void render(SDL_Renderer* renderer) override;
         void clean() override;

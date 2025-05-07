@@ -27,6 +27,8 @@ void Music::loadmusic(const char* name, const char* path)
     }
     music_tracks[name] = music;
     original_music_volumes[music] = MIX_MAX_VOLUME;
+
+    if (is_muted) Mix_VolumeMusic(0);
     return;
 }
 
@@ -40,6 +42,8 @@ void Music::loadsound(const char* name, const char* path)
     }
     music_sounds[name] = sound;
     original_sound_volumes[sound] = MIX_MAX_VOLUME;
+
+    if (is_muted) Mix_VolumeChunk(sound, 0);
     return;
 }
 
@@ -52,7 +56,7 @@ void Music::playmusic(const char* name, bool loop)
         return;
     }
 
-    if (loop)   Mix_PlayMusic(music_tracks[name], 1);
+    if (loop)   Mix_PlayMusic(music_tracks[name], -1);
     else        Mix_PlayMusic(music_tracks[name], 0);
 }
 
@@ -62,6 +66,13 @@ void Music::playsound(const char* name, int channel, bool loop)
     {
         SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Sound not found: %s", name);
         return;
+    }
+
+    // Is playing
+    if (channel != -1 && Mix_Playing(channel))
+    {
+        // Turn off
+        Mix_HaltChannel(channel);
     }
     
     if (loop)   Mix_PlayChannel(channel, music_sounds[name], -1);

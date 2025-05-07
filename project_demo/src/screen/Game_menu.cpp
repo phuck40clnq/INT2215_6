@@ -38,6 +38,8 @@ void Game_Menu::create_buttons()
 // ---Handle event---
 void Game_Menu::handle_event(SDL_Event& event)
 {
+    handle_overlay(event);
+    if (get_overlay() == OVERLAY::PAUSE || get_overlay() == OVERLAY::INSTRUCTION || get_overlay() == OVERLAY::QUIT)    return;
     handle_click(event);
 }
 
@@ -63,9 +65,6 @@ void Game_Menu::handle_button_click(Button& button)
 
 void Game_Menu::handle_click(SDL_Event& event)
 {
-    
-    handle_overlay(event);
-
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
     {
         int x, y;
@@ -74,14 +73,14 @@ void Game_Menu::handle_click(SDL_Event& event)
         for (auto& button : buttons)
         {
             if (!button.is_touch(x, y)) continue;
-            music->playsound("click_button", -1, false);
+            music->playsound("click_button", 2, false);
             handle_button_click(button);
         }
 
         SDL_FRect pause_rect = {760, 0, 40, 40};
         if (texture->is_touch(x, y, pause_rect))
         {
-            music->playsound("click_button", -1, false);
+            music->playsound("click_button", 2, false);
             set_overlay(OVERLAY::PAUSE);
             setting->set_active(true);
         }
@@ -152,7 +151,7 @@ void Game_Menu::render()
     texture->render("background_menu", background_menu, {255, 255, 255, 255}, false, false);
     texture->render("texture_pause", pause_rect, { 255, 255, 255, 128 }, true, true);
 
-    render_text(renderer, "WELCOME", 200, 130, font->get_font("font1_80"));
+    render_text(renderer, "WELCOME", 200, 130, font->get_font("font6_80"));
 
     int mouse_x, mouse_y;
     SDL_GetMouseState(&mouse_x, &mouse_y);

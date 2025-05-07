@@ -18,6 +18,8 @@ LIBS="-lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer"
 g++ $SOURCES -o "$OUTPUT" -std=c++11 $LIBS 2>> build.log
 
 echo "Build!"
+cat build.log
+
 
 # Check if the compilation was successful
 if [ $? -eq 0 ]; then
@@ -26,6 +28,4 @@ if [ $? -eq 0 ]; then
 
 else
     echo "Error!"
-    echo "Compiler errors:"
-    cat build.log
 fi

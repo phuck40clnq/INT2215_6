@@ -8,7 +8,7 @@ class Game_Playing;
 class Boom : public Item
 {
     public:
-        Boom(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay, int level, int enemy_count, int boss_defeated);
+        Boom(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay = -1, int level = -1, int enemy_count = -1, int boss_defeated = -1, bool repeat = true);
         ~Boom() { clean(); }
         void render(SDL_Renderer* renderer) override;
         void clean() override;

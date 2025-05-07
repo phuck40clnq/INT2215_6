@@ -11,7 +11,7 @@ class Buff_Player_Exp_Item : public Item
         int exp_buff_amount = 50;
 
     public:
-        Buff_Player_Exp_Item(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay = -1, int level = -1, int enemy_count = -1, int boss_defeated = -1);
+        Buff_Player_Exp_Item(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay = -1, int level = -1, int enemy_count = -1, int boss_defeated = -1, bool repeat = true);
         ~Buff_Player_Exp_Item() { clean(); }
         void render(SDL_Renderer* renderer) override;
         void clean() override;

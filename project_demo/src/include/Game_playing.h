@@ -22,7 +22,7 @@ class Game_Playing
     unsigned last_time = 0;
     TimeDelay time_delay;
 
-    Board* instruction,* setting;
+    Board* instruction,* setting,* quit;
 
     std::vector<Item*> items;
 
@@ -64,7 +64,7 @@ class Game_Playing
         // Items
         std::vector<Item*> items_to_delete;
         std::vector<Item*>& get_items() { return items; }
-        void add_item_to_game(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay = -1, int level = -1, int enemy_count = -1, int boss_defeated = -1);
+        void add_item_to_game(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay = -1, int level = -1, int enemy_count = -1, int boss_defeated = -1, bool repeat = true);
         void add_all_items_to_game();
         void update_items();
         void render_items();
@@ -82,7 +82,7 @@ class Game_Playing
             items_to_delete.clear();
         }
 
-        Game_Playing(SDL_Renderer* renderer, Music* music, Font* font, Texture* texture, Board* instruction, Board* setting);
+        Game_Playing(SDL_Renderer* renderer, Music* music, Font* font, Texture* texture, Board* instruction, Board* setting, Board* quit);
         ~Game_Playing() { clean(); }
 
         void create_buttons();

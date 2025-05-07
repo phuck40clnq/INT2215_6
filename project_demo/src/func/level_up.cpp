@@ -24,10 +24,9 @@ void level_up_enemy(Game_Playing &game, TimeDelay &delay)
         game.enemy_hp += 1.f;
 
         // Add new enemy
-        game.enemies.push_back(new Enemy(game.music, game.texture, "texture_enemy", game.enemy_speed, game.enemy_hp, 800, -1, 42, 42, false));
+        game.enemies.push_back(new Enemy(game.music, game.texture, "texture_enemy", game.enemy_speed * 1.5, game.enemy_hp * 0.5, 800, -1, 42, 42, false));
         game.current_enemy++;
 
-        SDL_Log("Enemy level up! Speed: %.2f, HP: %.2f", game.enemy_speed, game.enemy_hp);
         SDL_Log(">>> Enemy spawned! Current enemies: %d", game.current_enemy);
 
         delay.start(12000);

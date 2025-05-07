@@ -28,7 +28,7 @@ class Game_Playing;
 class Item
 {
     public:
-        Item(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay = -1, int level = -1, int enemy_count = -1, int boss_defeated = -1);
+        Item(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay = -1, int level = -1, int enemy_count = -1, int boss_defeated = -1, bool repeat = true);
         virtual ~Item() { clean(); }
         virtual void render(SDL_Renderer* renderer);
         SDL_FRect get_rect() const { return rect; }
@@ -37,11 +37,12 @@ class Item
         virtual void apply_buff(Game_Playing& game) = 0;
 
         bool active() const { return is_active; }
-        void set_active(bool active) { this->is_active = active; }
+        void set_active(bool active);
         void ready(const Game_Playing& game);
 
         void random_position();
 
+        bool get_repeat() { return this->repeat; }
         ITEM_EFFECT get_effect() { return effect; }
 
     protected:
@@ -60,6 +61,7 @@ class Item
         bool is_active;
         TimeDelay timer;
 
+        bool repeat;
     private:
         bool is_time_started = false;
 };

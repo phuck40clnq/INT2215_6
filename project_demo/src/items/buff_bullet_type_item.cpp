@@ -3,8 +3,8 @@
 
 #include <random>
 
-Buff_Bullet_Type_Item::Buff_Bullet_Type_Item(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay, int level, int enemy_count, int boss_defeated, BULLET_TYPE bullet_type)
-    : Item(texture, texture_name, x, y, w, h, effect, trigger, delay, level, enemy_count, boss_defeated), bullet_type(bullet_type) 
+Buff_Bullet_Type_Item::Buff_Bullet_Type_Item(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay, int level, int enemy_count, int boss_defeated, bool repeat, BULLET_TYPE bullet_type)
+    : Item(texture, texture_name, x, y, w, h, effect, trigger, delay, level, enemy_count, boss_defeated, repeat), bullet_type(bullet_type) 
 {
     // Set bullet type
     if (bullet_type == BULLET_TYPE::DEFAULT)

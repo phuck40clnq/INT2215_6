@@ -11,15 +11,18 @@ class Game_Gameover
     private:
         std::vector<Button> buttons;
 
-        Board* instruction,* setting;
+        Board* instruction,* setting,* quit;
 
         SDL_Renderer* renderer;
         Music* music;
         Font* font;
         Texture* texture;
 
+        float background_x = 0.f;
+        float background_speed = 1.f;
+
     public:
-        Game_Gameover(SDL_Renderer* renderer, Music* music, Font* font, Texture* texture, Board* instruction, Board* setting);
+        Game_Gameover(SDL_Renderer* renderer, Music* music, Font* font, Texture* texture, Board* instruction, Board* setting, Board* quit);
         ~Game_Gameover() { clean(); }
 
         void init();
@@ -29,6 +32,8 @@ class Game_Gameover
         void handle_button_click(Button& button);
         void handle_overlay(SDL_Event& event);
         void toggle_overlay(OVERLAY overlay, Board* board);
+
+        void update();
         void render();
         void clean();
 };

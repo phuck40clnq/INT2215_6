@@ -66,11 +66,11 @@ std::vector<Enemy*>::iterator handle_enemy_death(std::vector<Enemy*>::iterator e
         int rand = dist(gen);
         if (rand < 20) // 20 %
         {
-            game.add_item_to_game(game.texture, "texture_boom", tmp.x + 17.5, tmp.y + 22, 50, 50, ITEM_EFFECT::BOOM, ITEM_TRIGGER::NONE);
+            game.add_item_to_game(game.texture, "texture_boom", tmp.x + 17.5, tmp.y + 22, 50, 50, ITEM_EFFECT::BOOM, ITEM_TRIGGER::NONE, -1, -1, -1, -1, false);
         }
         if (rand >= 90) // 10 %
         {
-            game.add_item_to_game(game.texture, "texture_buff_player_exp", tmp.x + 17.5, tmp.y + 22, 50, 50, ITEM_EFFECT::EXP, ITEM_TRIGGER::TIME_BASED, 200, -1, -1, -1);
+            game.add_item_to_game(game.texture, "texture_buff_player_exp", tmp.x + 17.5, tmp.y + 22, 50, 50, ITEM_EFFECT::EXP, ITEM_TRIGGER::TIME_BASED, 200, -1, -1, -1, false);
         }
     }
 
@@ -87,6 +87,7 @@ std::vector<Enemy*>::iterator handle_enemy_death(std::vector<Enemy*>::iterator e
         game.enemies_to_add.push_back(new Enemy(game.music, game.texture, "texture_enemy", game.enemy_speed * 2, game.enemy_hp * 0.5, tmp.x + 20, tmp.y + 85, 85, 85));
         game.current_enemy++;
 
+        game.music->playsound("boom_boss_die", 3, false);
         SDL_Log(">>> Boss died! Splitting into 2 enemies.");
 
         game.enemies_to_delete.push_back(*enemy);
@@ -214,8 +215,15 @@ void handle_collision_player_item(Player* player, std::vector<Item*>& items, Gam
             }
             item->apply_buff(game);
             item->set_active(false);
+
+            if (!item->get_repeat())
+                game.items_to_delete.push_back(item);
+
             if (item->get_effect() == ITEM_EFFECT::BUFF_BULLET_TYPE || item->get_effect() == ITEM_EFFECT::BUFF_BULLET_DAMAGE)
+            {    
+                game.music->playsound("yippee", 4, false);   
                 game.player->buff = true;
+            }
         }
     }
 
@@ -235,7 +243,10 @@ void handle_collision_enemy_item(std::vector<Enemy*>::iterator enemy, std::vecto
             (*enemy)->hp = (*enemy)->max_hp;
             item->apply_buff(game);
             item->set_active(false);
-            game.items_to_delete.push_back(item); // Appear once
+            game.music->playsound("player_die", 5, false);
+            
+            if (!item->get_repeat())
+                game.items_to_delete.push_back(item);
         }
     }
 

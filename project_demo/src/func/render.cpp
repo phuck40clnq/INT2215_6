@@ -1,6 +1,6 @@
 #include "../include/render.h"
 
-void render_text(SDL_Renderer* renderer, const char* text, int x, int y, TTF_Font* font, int angle, SDL_Color color)
+void render_text(SDL_Renderer* renderer, const char* text, int x, int y, TTF_Font* font, int angle, SDL_Color color, bool center)
 {
     if (!font)  return;
     // Draw into the rect
@@ -21,7 +21,17 @@ void render_text(SDL_Renderer* renderer, const char* text, int x, int y, TTF_Fon
     }
 
     SDL_Rect text_rect;
-    text_rect = {x, y, text_surface->w, text_surface->h};
+    text_rect.y = y;
+    text_rect.w = text_surface->w;
+    text_rect.h = text_surface->h;
+    if (center)
+    {
+        text_rect.x = 400 - text_rect.w / 2;
+    }
+    else
+    {
+        text_rect.x = x;
+    }
 
     if (angle == 0)
         SDL_RenderCopy(renderer, text_texture, nullptr, &text_rect);

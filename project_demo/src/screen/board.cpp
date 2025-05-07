@@ -39,9 +39,15 @@ void Board::render(bool draw_transparent, SDL_Color color)
     int line_height = TTF_FontHeight(font->get_font(name_font));
     int line_spacing = text_rect.y;
 
-    for (auto& line : lines) 
+    for (int i = 0, l = lines.size(); i < l; i++) 
     {
-        render_text(renderer, line, text_rect.x, line_spacing, font->get_font(name_font), 0, text_color);
+        if (i == 0)
+        {
+            render_text(renderer, lines[i], text_rect.x, line_spacing, font->get_font(name_font), 0, text_color, true);
+            line_spacing += line_height + 5;
+            continue;
+        }
+        render_text(renderer, lines[i], text_rect.x, line_spacing, font->get_font(name_font), 0, text_color);
         line_spacing += line_height + 5;
     }
 
@@ -87,7 +93,7 @@ void Board::handle_close_button_click(SDL_Event& event)
         if (close_button.is_touch(x, y))
         {
             SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Close button clicked");
-            music->playsound("click_button", -1, false);
+            music->playsound("click_button", 2, false);
             active = false;
         }
     }
@@ -103,7 +109,7 @@ void Board::handle_button_click(SDL_Event& event)
         for (auto& button : buttons)
         {
             if (!button.is_touch(x, y)) continue;
-            music->playsound("click_button", -1, false);
+            music->playsound("click_button", 2, false);
             if (button_callback)
             {
                 button_callback(button.get_text());
@@ -115,12 +121,15 @@ void Board::handle_button_click(SDL_Event& event)
 void Board::clean()
 {}
 
-void Board::add_button(const char* text)
+void Board::add_button(const char* text, float fx, float fy, float button_x_offset, float button_y_offset, float button_spacing, float button_width, float button_height)
 {
-    float x = button_x_offset + 600;
-    float y = button_y_offset + button_count * (button_height + button_spacing) + 100;
-
-    Button button(font, x, y, button_width, button_height, text);
+    if (fx == 0.f && fy == 0.f)
+    {
+        fx = button_x_offset + 550;
+        fy = button_y_offset + button_count * (button_height + button_spacing) + 100;
+    }
+    
+    Button button(font, fx, fy, button_width, button_height, text);
     button.set_font(name_font);
     buttons.push_back(button);
 

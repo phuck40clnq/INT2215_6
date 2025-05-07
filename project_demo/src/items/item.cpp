@@ -3,16 +3,19 @@
 
 #include <random>
 
-Item::Item(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay, int level, int enemy_count, int boss_defeated)
-    : effect(effect), trigger(trigger), delay(delay), level(level), enemy_count(enemy_count), boss_defeated(boss_defeated)
+Item::Item(Texture* texture, const char* texture_name, float x, float y, float w, float h, ITEM_EFFECT effect, ITEM_TRIGGER trigger, Uint32 delay, int level, int enemy_count, int boss_defeated, bool repeat)
+    : effect(effect), trigger(trigger), delay(delay), level(level), enemy_count(enemy_count), boss_defeated(boss_defeated), repeat(repeat)
 {
     this->rect = { x, y, w, h };
+
+    // Check if random
+    if (x == -1.f && y == -1.f)
+    {
+        random_position();
+    }
     this->texture = texture;
     this->texture_name = texture_name;
     this->is_active = false;
-
-    // Check if random
-    random_position();
 }
 
 void Item::render(SDL_Renderer* renderer)
@@ -73,6 +76,39 @@ void Item::random_position()
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dist_x(0.f, 800.f - int(rect.w));
     std::uniform_real_distribution<float> dist_y(80.f, 600.f - int(rect.h));
-    if (rect.x == -1.f)  rect.x = dist_x(gen);
-    if (rect.y == -1.f)  rect.y = dist_y(gen);
+    rect.x = dist_x(gen);
+    rect.y = dist_y(gen);
+}
+
+void Item::set_active(bool active)
+{
+    is_active = active;
+
+    if (!repeat)    return;
+
+    // Repeat
+    if (active)    return;
+    random_position();
+    switch (trigger)
+    {
+        case ITEM_TRIGGER::TIME_BASED:
+            is_time_started = false;
+            break;
+
+        case ITEM_TRIGGER::PLAYER_LEVEL:
+            level += 3;
+            break;
+
+        case ITEM_TRIGGER::ENEMY_COUNT:
+            enemy_count += 2;
+            break;
+
+        case ITEM_TRIGGER::BOSS_DEFEATED:
+            boss_defeated++;
+            break;
+        case ITEM_TRIGGER::NONE:
+            break;
+        default:
+            break;
+    }
 }

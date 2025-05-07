@@ -37,6 +37,9 @@ class Game
         void set_setting_button();
         void handle_setting_button(const char* text);
 
+        void set_quit_button();
+        void handle_quit_button(const char* text);
+
     public:
 
         SDL_Renderer* get_renderer() { return renderer; }
@@ -48,11 +51,8 @@ class Game
         void new_menu();
         void new_game();
         void new_gameover();
-<<<<<<< HEAD
-=======
-        void new_instruction();
+
         void restart_game();
->>>>>>> newbranch
 
         // Game run
         void handle_event();

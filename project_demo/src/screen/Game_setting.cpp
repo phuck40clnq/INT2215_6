@@ -59,7 +59,7 @@ void Game_setting::handle_event(SDL_Event& event)
         for (auto& button : buttons)
         {
             if (!button.is_touch(x, y)) continue;
-            music->playsound("click_button", -1, false);
+            music->playsound("click_button", 2, false);
             if (strcmp(button.get_text(), "Play") == 0) set_state(GAME_STATE::PLAYING);
             if (strcmp(button.get_text(), "Instruction") == 0) set_overlay(OVERLAY::INSTRUCTION);
             if (strcmp(button.get_text(), "Setting") == 0) set_overlay(OVERLAY::PAUSE);

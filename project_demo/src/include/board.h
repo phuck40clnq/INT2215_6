@@ -21,12 +21,6 @@ class Board
 
     std::vector<Button> buttons;
 
-    // Thông số sắp xếp các button
-    float button_x_offset = 10;
-    float button_y_offset = 10;
-    float button_spacing = 5;
-    float button_width = 100;
-    float button_height = 50;
     int button_count = 0;
 
     void draw_transparent();
@@ -51,7 +45,7 @@ class Board
         void render(bool draw_transparent = false, SDL_Color color = {0, 0, 0, 255});
         void clean();
 
-        void add_button(const char* text);
+        void add_button(const char* text, float fx = 0.f, float fy = 0.f, float button_x_offset = 10, float button_y_offset = 10, float button_spacing = 5, float button_width = 100, float button_height = 50);
 
         void set_button_callback(std::function<void(const char*)> callback)
         {

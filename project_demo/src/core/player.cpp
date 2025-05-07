@@ -53,7 +53,6 @@ void Player::update()
         reset_data();
 
         buff_timer.reset();
-        SDL_Log(">>> BUFF OFF");
 
         // Set color to normal
         player_color = {255, 255, 255, 255}; // White
@@ -81,7 +80,7 @@ void Player::update()
     void Player::fire_bullet()
     {
         if (fired)
-        {            
+        {   
             int spacing = 20;
             int num_bullets = player_level / 3 + 1;
             if (num_bullets > 5) num_bullets = 5;
@@ -204,7 +203,6 @@ void Player::combo()
         // Reset combo
         combo_kill_count = 0;
         last_combo_time = current_time;
-        SDL_Log(">>> ----------------COMBO KILL: %d", combo_kill_count);
     }
 }
 
@@ -265,7 +263,6 @@ void Player::buff_shield(Uint32 timer)
 {
     is_shield_active = true;
     shield_timer.start(timer);
-    SDL_Log(">>> SHIELD ON");
     show_status_text("SHIELD ON", 500, fx - w / 2, fy - 35, -20, {100, 200, 255, 255});
 }
 
@@ -275,7 +272,6 @@ void Player::update_shield()
     {
         is_shield_active = false;
         shield_timer.reset();
-        SDL_Log(">>> SHIELD OFF");
         show_status_text("SHIELD OFF", 500, fx - w / 2 - 10, fy - 45, 0, {100, 200, 255, 255});
     }
 }
@@ -343,6 +339,4 @@ void Player::reset_default()
         shield_timer.reset();
     }
     show_status_text("SHIELD OFF", 500, fx - w / 2 - 10, fy - 45, 0, {100, 200, 255, 255});
-
-    SDL_Log(">>> Player reset to default after enemy eats Boom!");
 }

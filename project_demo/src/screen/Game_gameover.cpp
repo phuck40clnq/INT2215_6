@@ -1,7 +1,7 @@
 #include "../include/Game_gameover.h"
 #include <cstring>
 
-Game_Gameover::Game_Gameover(SDL_Renderer* renderer, Music* music, Font* font, Texture* texture, Board* instruction, Board* setting)
+Game_Gameover::Game_Gameover(SDL_Renderer* renderer, Music* music, Font* font, Texture* texture, Board* instruction, Board* setting, Board* quit)
 { 
     this->renderer = renderer;
     this->music = music;
@@ -9,6 +9,7 @@ Game_Gameover::Game_Gameover(SDL_Renderer* renderer, Music* music, Font* font, T
     this->texture = texture;
     this->instruction = instruction;
     this->setting = setting;
+    this->quit = quit;
     init(); 
     create_buttons(); 
 }
@@ -37,6 +38,9 @@ void Game_Gameover::create_buttons()
 // ---Handle event---
 void Game_Gameover::handle_event(SDL_Event& event)
 {
+    handle_overlay(event);
+
+    if (get_overlay() == OVERLAY::PAUSE || get_overlay() == OVERLAY::INSTRUCTION || get_overlay() == OVERLAY::QUIT)    return;
     handle_click(event);
 }
 
@@ -55,13 +59,15 @@ void Game_Gameover::handle_button_click(Button& button)
     //     set_overlay(OVERLAY::PAUSE);
     //     setting->set_active(true);
     // }
-    else if (strcmp(button.get_text(), "Exit") == 0) set_running(false);
+    else if (strcmp(button.get_text(), "Exit") == 0)
+    {
+        set_overlay(OVERLAY::QUIT);
+        quit->set_active(true);
+    }
 }
 
 void Game_Gameover::handle_click(SDL_Event& event)
 {
-    handle_overlay(event);
-
     if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
     {
         int x, y;
@@ -70,14 +76,14 @@ void Game_Gameover::handle_click(SDL_Event& event)
         for (auto& button : buttons)
         {
             if (!button.is_touch(x, y)) continue;
-            music->playsound("click_button", -1, false);
+            music->playsound("click_button", 2, false);
             handle_button_click(button);
         }
 
         SDL_FRect pause_rect = {760, 0, 40, 40};
         if (texture->is_touch(x, y, pause_rect))
         {
-            music->playsound("click_button", -1, false);
+            music->playsound("click_button", 2, false);
             set_overlay(OVERLAY::PAUSE);
             setting->set_active(true);
         }
@@ -98,6 +104,11 @@ void Game_Gameover::handle_overlay(SDL_Event& event)
         instruction->set_active(false);
         pop_overlay();
     }
+    if (!quit->is_active() && get_overlay() == OVERLAY::QUIT)
+    {
+        quit->set_active(false);
+        pop_overlay();
+    }
 
     // Handle key events for overlay
     if (event.type == SDL_KEYDOWN)
@@ -109,6 +120,10 @@ void Game_Gameover::handle_overlay(SDL_Event& event)
         else if (event.key.keysym.sym == SDLK_i)
         {
             toggle_overlay(OVERLAY::INSTRUCTION, instruction); // Toggle INSTRUCTION
+        }
+        else if (event.key.keysym.sym == SDLK_ESCAPE)
+        {
+            toggle_overlay(OVERLAY::QUIT, quit); // Toggle QUIT
         }
     }
 }
@@ -127,6 +142,15 @@ void Game_Gameover::toggle_overlay(OVERLAY overlay, Board* board)
     }
 }
 
+// ---Update---
+void Game_Gameover::update()
+{
+    background_x -= background_speed;
+    if (background_x <= -800.f) background_x = 0.f;
+
+    return;
+}
+
 // ---Render---
 void Game_Gameover::render()
 {
@@ -134,10 +158,13 @@ void Game_Gameover::render()
     // SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
     // SDL_RenderFillRect(renderer, &tmp);
 
-    SDL_FRect background_gameover = {0, 0, 800, 600};
+    SDL_FRect background_gameover1 = {background_x, 0, 800, 600};
+    SDL_FRect background_gameover2 = {background_x + 800, 0, 800, 600};
     SDL_FRect pause_rect = { 760, 0, 40, 40 };
 
-    texture->render("background_gameover", background_gameover, {255, 255, 255, 255}, false, false);
+    texture->render("background_gameover", background_gameover1, {255, 255, 255, 255}, false, false);
+    texture->render("background_gameover", background_gameover2, {255, 255, 255, 255}, false, false);
+
     texture->render("texture_pause", pause_rect, { 255, 255, 255, 128 }, true, true);
 
     int mouse_x, mouse_y;
