@@ -102,7 +102,8 @@ void Game_Playing::init()
     music->loadsound("boom_boss_die", "../music/sound_effect/small_boom.wav");
     music->loadsound("player_die", "../music/sound_effect/endgame.wav");
 
-    music->setvolume(5, "player_move");
+    music->setvolume(7, "player_move");
+    music->setvolume(5, "player_die");
 
     // Player
     player = new Player(music, texture, "texture_player");

@@ -142,6 +142,7 @@ bool Game::init(const char* title, int width, int height)
     music.loadmusic("background_gameover", "../music/background/Jesu.mp3");
 
     music.setvolume_music(30);
+    music.setvolume(45, "background_playing");
     music.setvolume_sound(10);
 
     // ---Load font---
