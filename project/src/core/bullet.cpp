@@ -60,7 +60,7 @@ void Bullet::set_properties_from_type()
             break;
         case BULLET_TYPE::ELECTRIC:
             damage *= 1.2f;
-            s *= 0.6f;
+            s *= 0.4f;
             break;
         default:
             break;

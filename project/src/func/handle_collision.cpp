@@ -163,7 +163,7 @@ void apply_bullet_effect_on_enemy(std::vector<Enemy*>::iterator enemy, Bullet& b
             if (!(*enemy)->is_poisoned) 
             {
                 (*enemy)->is_poisoned = true;
-                (*enemy)->poison_damage = bullet.damage * 0.5f; // Damage of poison
+                (*enemy)->poison_damage = bullet.damage * 0.7f; // Damage of poison
                 (*enemy)->poison_tick_delay.start(1000);        // Damage each second
                 (*enemy)->poison_effect_duration.start(3000);  // Start poison damage last 3s
             }
@@ -194,7 +194,7 @@ void handle_collision_player_enemy(std::vector<Enemy*>::iterator enemy, Player* 
         return;
     }
 
-    // player->is_dead = true;
+    player->is_dead = true;
     return;
 }
 
